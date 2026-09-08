@@ -53,49 +53,16 @@ A collection of tested configuration snippets, frosted glass shaders, floating b
 
 ### Main experience
 
-<!-- Future image: assets/showcase/polish-hero.png -->
-<!-- ![Main desktop experience](assets/showcase/polish-hero.png) -->
+**Omarchy Desktop Showcase** (click to view)
+
+https://github.com/aarushdalal/omarchy-shell-polish/blob/main/assets/showcase/omarchy_intro_showcase.mp4
 
 ### Feature gallery
-
-<!-- Future image: assets/showcase/polish-glass-blur.png -->
-<!-- ![polish-glass-blur.png](assets/showcase/polish-glass-blur.png) -->
-
-<!-- Future image: assets/showcase/polish-floating-bar.png -->
-<!-- ![polish-floating-bar.png](assets/showcase/polish-floating-bar.png) -->
-
-<!-- Future image: assets/showcase/polish-rounded-corners.png -->
-<!-- ![polish-rounded-corners.png](assets/showcase/polish-rounded-corners.png) -->
-
-<!-- Future image: assets/showcase/polish-window-gaps.png -->
-<!-- ![polish-window-gaps.png](assets/showcase/polish-window-gaps.png) -->
-
-<!-- Future image: assets/showcase/feature-05.png -->
-<!-- ![Feature preview 5](assets/showcase/feature-05.png) -->
-
-<!-- Future image: assets/showcase/feature-06.png -->
-<!-- ![Feature preview 6](assets/showcase/feature-06.png) -->
-
-<!-- Future image: assets/showcase/feature-07.png -->
-<!-- ![Feature preview 7](assets/showcase/feature-07.png) -->
-
-<!-- Future image: assets/showcase/feature-08.png -->
-<!-- ![Feature preview 8](assets/showcase/feature-08.png) -->
-
-<!-- Future image: assets/showcase/feature-09.png -->
-<!-- ![Feature preview 9](assets/showcase/feature-09.png) -->
-
-<!-- Future image: assets/showcase/feature-10.png -->
-<!-- ![Feature preview 10](assets/showcase/feature-10.png) -->
 
 ### Motion and interaction
 
 <!-- Future GIF: assets/showcase/interaction-01.gif -->
-<!-- ![Interaction preview](assets/showcase/interaction-01.gif) -->
-
 <!-- Future GIF: assets/showcase/interaction-02.gif -->
-<!-- ![Transition preview](assets/showcase/interaction-02.gif) -->
-
 ### Video demonstrations
 
 <!-- Future thumbnail: assets/showcase/video-01-thumbnail.png -->
