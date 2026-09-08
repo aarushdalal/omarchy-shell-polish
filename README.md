@@ -55,7 +55,7 @@ A collection of tested configuration snippets, frosted glass shaders, floating b
 
 **Omarchy Desktop Showcase** (click to view)
 
-https://github.com/aarushdalal/omarchy-shell-polish/blob/main/assets/showcase/omarchy_intro_showcase.mp4
+<video src="https://github.com/aarushdalal/omarchy-shell-polish/raw/main/assets/showcase/omarchy_intro_showcase.mp4" controls width="100%"></video>
 
 ### Feature gallery
 
