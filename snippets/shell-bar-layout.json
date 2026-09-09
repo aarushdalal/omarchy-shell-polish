@@ -1,0 +1,29 @@
+// Omarchy Shell Polish: Floating Bar & Center Anchor Layout
+// Merge into ~/.config/omarchy/shell.json under "bar"
+
+{
+  "bar": {
+    "centerAnchor": "daemon0.system-pulse",
+    "layout": {
+      "center": [
+        { "id": "omarchy.indicators" },
+        { "id": "daemon0.system-pulse" }
+      ],
+      "left": [
+        { "id": "omarchy.menu" },
+        { "id": "omarchy.workspaces" }
+      ],
+      "right": [
+        { "id": "daemon0.focus-hub" },
+        { "id": "daemon0.cloud-sync" },
+        { "id": "daemon0.config-timemachine" },
+        { "id": "omarchy.audio" },
+        { "id": "omarchy.network" },
+        { "id": "omarchy.bluetooth" },
+        { "id": "omarchy.power" }
+      ]
+    },
+    "position": "top",
+    "transparent": false
+  }
+}
