@@ -117,12 +117,9 @@ Apply by merging into `~/.config/hypr/bindings.lua` and running `hyprctl reload`
 
 **Omarchy Desktop Showcase**
 
-<video controls loop muted playsinline preload="metadata" width="100%">
-  <source src="https://raw.githubusercontent.com/aarushdalal/omarchy-shell-polish/main/assets/showcase/omarchy_intro_showcase.webm" type="video/webm">
-  Your browser cannot play WebM video. [Download the showcase video](https://raw.githubusercontent.com/aarushdalal/omarchy-shell-polish/main/assets/showcase/omarchy_intro_showcase.webm).
-</video>
+![Omarchy Desktop Showcase](assets/showcase/omarchy_intro_showcase.gif)
 
-[Download the showcase video](https://raw.githubusercontent.com/aarushdalal/omarchy-shell-polish/main/assets/showcase/omarchy_intro_showcase.webm)
+[Download the full WebM showcase video](https://raw.githubusercontent.com/aarushdalal/omarchy-shell-polish/main/assets/showcase/omarchy_intro_showcase.webm)
 
 ---
 
