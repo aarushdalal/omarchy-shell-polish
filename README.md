@@ -117,7 +117,7 @@ Apply by merging into `~/.config/hypr/bindings.lua` and running `hyprctl reload`
 
 **Omarchy Desktop Showcase**
 
-https://github.com/user-attachments/assets/6852adbb-d0d4-461f-9046-026d644fb19c
+https://github.com/user-attachments/assets/7288605e-4853-4e2e-b077-e039577fb0aa
 
 ---
 
