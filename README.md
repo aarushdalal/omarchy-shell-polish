@@ -117,9 +117,7 @@ Apply by merging into `~/.config/hypr/bindings.lua` and running `hyprctl reload`
 
 **Omarchy Desktop Showcase**
 
-![Omarchy Desktop Showcase](assets/showcase/omarchy_intro_showcase.gif)
-
-[Download the full WebM showcase video](https://raw.githubusercontent.com/aarushdalal/omarchy-shell-polish/main/assets/showcase/omarchy_intro_showcase.webm)
+https://github.com/user-attachments/assets/6852adbb-d0d4-461f-9046-026d644fb19c
 
 ---
 
