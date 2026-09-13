@@ -124,4 +124,3 @@ https://github.com/user-attachments/assets/7288605e-4853-4e2e-b077-e039577fb0aa
 ## License
 
 [MIT License](LICENSE).
-omarchy-shell-polish/assets/showcase/omarchy_intro_showcase.webm
