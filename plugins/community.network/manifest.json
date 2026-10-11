@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "community.network",
+  "name": "Network \u00b7 Refined",
+  "version": "1.1.0",
+  "author": "Omarchy",
+  "description": "Wi-Fi list and connection state",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Network",
+    "description": "Wi-Fi list and connection state",
+    "category": "Network",
+    "allowMultiple": false
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.network"
+  }
+}

@@ -1,8 +1,8 @@
 # Omarchy Shell Polish (`omarchy-shell-polish`)
 
-> **Unofficial / Community Snippets**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, and ergonomic keybinding polish.
+> **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, and ergonomic keybinding polish.
 
-Three focused configuration snippets that apply visual refinements, a center-island bar layout, and a conflict-free ergonomic keybinding set to Omarchy Hyprland — without modifying any Omarchy core files.
+Version 1.1 adds preset-aware native controls for Omarchy and a Caelestia overlay for DaemonOS. It preserves both desktop identities and retains the original optional snippets. See [Refinement and rollback](docs/REFINEMENT.md) and [component licensing](docs/COMPONENT-PROVENANCE.md).
 
 This project was developed through an AI-assisted workflow. The concept, customization, configuration, testing, integration, and final iteration were directed and carried out by me.
 
@@ -12,12 +12,12 @@ This project was developed through an AI-assisted workflow. The concept, customi
 
 I did not write Omarchy, Quickshell, or Hyprland from scratch. What I contributed:
 
-- **Frosted Glass Snippet** (`snippets/looknfeel-glass.lua`): Tuned Hyprland `decoration` parameters — blur radius, passes, layerrule blur targets, window opacity, and shadow settings — to produce a frosted glass aesthetic on Wayland with AMD Radeon Vega integrated graphics. Values were iterated to balance visual quality with performance on a 60 Hz 1080p panel.
+- **Frosted Glass Snippet** (`snippets/looknfeel-glass.lua`): Tuned Hyprland `decoration` parameters — blur radius, passes, layerrule blur targets, window opacity, and shadow settings — to produce a frosted glass aesthetic on Wayland. Values were iterated to balance visual quality with performance on a supported display.
 - **Floating Bar Layout Snippet** (`snippets/shell-bar-layout.json`): Designed a `shell.json` layout configuration placing a center island telemetry widget (`daemon0.system-pulse`) with balanced left and right widget clusters for the Omarchy Quickshell bar.
 - **Ergonomic Keybindings Snippet** (`snippets/bindings-ergonomic.lua`): Fully audited all live Hyprland keybindings against the Omarchy distribution defaults. Restored missing core Omarchy window management bindings (`SUPER + T`, `SUPER + P`, `SUPER + S`, `SUPER + SHIFT + SPACE`). Mapped universal productivity shortcuts — media playback cluster (`SUPER + \`), app launcher (`SUPER + D`), LazyGit (`SUPER + CTRL + G`), Config Time Machine (`SUPER + ALT + H`), screenshot (`SUPER + SHIFT + S`), Study Focus (`SUPER + CTRL + ALT + S`) — eliminating all duplicate dispatches.
 - **Installer**: Authored `./install.sh check` for dependency validation.
 - **Documentation**: Wrote all snippet descriptions, usage instructions, and manual application guides.
-- **Testing**: Tested all snippets on Omarchy 4.0.2 / Hyprland 0.56.2 with a AMD Ryzen 7 PRO 5850U system.
+- **Testing**: Tested all snippets on Omarchy 4.0.2 / Hyprland 0.56.2 on a supported Linux desktop.
 
 ---
 
@@ -124,3 +124,7 @@ https://github.com/user-attachments/assets/7288605e-4853-4e2e-b077-e039577fb0aa
 ## License
 
 [MIT License](LICENSE).
+
+## Refinement and privacy update
+
+Floating native controls · profile identity preserved. Current showcases use sample data; see [release privacy](docs/RELEASE-PRIVACY.md). Existing Git history is preserved.
