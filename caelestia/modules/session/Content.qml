@@ -3,6 +3,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
+import QtQuick.Controls as Controls
 import Quickshell
 import Quickshell.Io
 import Caelestia
@@ -18,16 +20,40 @@ Column {
 
     required property ScreenState screenState
     property bool previewMode: false
-    property string pendingAction: ""
-    property bool actionStarted: false
+    property alias pendingAction: actionState.pending
+    property alias actionStarted: actionState.busy
     property bool hibernateSupported: false
-    property bool canForce: false
-    property string feedback: ""
-    StyledText { text: qsTr("DaemonOS · Session"); font: Tokens.font.title.medium }
+    property alias canForce: actionState.canForce
+    property alias feedback: actionState.feedback
+    property var commandOverride: null
+    SessionActionState {
+        id: actionState
+        onExecuteRequested: command => {
+            actionProcess.command = root.commandOverride ? root.commandOverride(command) : command;
+            actionProcess.running = true;
+        }
+        onSucceeded: root.screenState.session = false
+        onFailed: root.screenState.session = true
+    }
     StyledText {
-        text: root.pendingAction ? (root.pendingAction === qsTr("Force logout") ? qsTr("Unsaved changes can be lost · Escape to cancel") : root.pendingAction === qsTr("Switch desktop") ? qsTr("Choose your desktop at login · Escape to cancel") : qsTr("Select again to confirm · Escape to cancel")) : (root.feedback || qsTr("Save your work before leaving"))
+        visible: actionState.feedback.length > 0
+        width: Tokens.sizes.session.button
+        text: actionState.feedback
+        wrapMode: Text.WordWrap
+        maximumLineCount: 3; elide: Text.ElideRight
+        Controls.ToolTip.visible: feedbackHover.containsMouse
+        Controls.ToolTip.text: actionState.feedback
+        MouseArea { id: feedbackHover; anchors.fill: parent; hoverEnabled: true; acceptedButtons: Qt.NoButton }
         font: Tokens.font.body.small
-        color: Qt.alpha(Colours.palette.m3onSurface, 0.65)
+        color: Colours.palette.m3onSurface
+    }
+    IconButton {
+        visible: actionState.pending.length > 0
+        icon: "close"
+        implicitWidth: Tokens.sizes.session.button
+        implicitHeight: 32
+        onClicked: actionState.cancel()
+        Accessible.name: qsTr("Cancel confirmation")
     }
 
     padding: Tokens.padding.large
@@ -40,19 +66,18 @@ Column {
         stdout: StdioCollector { onStreamFinished: { var answer = text.trim(); root.hibernateSupported = answer === 's "yes"' || answer === 's "challenge"'; } }
     }
     SessionButton {
-        actionLabel: qsTr("Lock"); icon: "lock"; command: ["loginctl", "lock-session"]; needsConfirmation: false
+        actionKind: "lock"; actionLabel: qsTr("Lock"); command: ["loginctl", "lock-session"]; needsConfirmation: false
         KeyNavigation.down: sleep
     }
     SessionButton {
-        id: sleep; actionLabel: qsTr("Sleep"); icon: "bedtime"; command: ["systemctl", "suspend"]; needsConfirmation: false
+        id: sleep; actionKind: "sleep"; actionLabel: qsTr("Sleep"); command: ["systemctl", "suspend"]; needsConfirmation: false
         KeyNavigation.down: logout
     }
     SessionButton {
         id: logout
 
-        actionLabel: qsTr("Log out")
+        actionKind: "logout"; actionLabel: qsTr("Log out")
 
-        icon: Config.session.icons.logout
         command: Config.session.commands.logout
 
         KeyNavigation.up: sleep
@@ -73,9 +98,8 @@ Column {
     SessionButton {
         id: shutdown
 
-        actionLabel: qsTr("Power off")
+        actionKind: "shutdown"; actionLabel: qsTr("Power off")
 
-        icon: Config.session.icons.shutdown
         command: Config.session.commands.shutdown
 
         KeyNavigation.up: logout
@@ -88,10 +112,14 @@ Column {
         height: Tokens.sizes.session.button
         sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
 
-        playing: visible && root.screenState.session
+        playing: visible && root.screenState.session && !Motion.reducedMotion
         asynchronous: true
-        speed: Config.general.sessionGifSpeed
-        source: Paths.absolutePath(Config.paths.sessionGif)
+        layer.enabled: true
+        layer.effect: MultiEffect { colorization: 1; colorizationColor: Colours.palette.m3primary; brightness: 0.25 }
+        speed: Math.max(1.8, Math.min(2.4, Config.general.sessionGifSpeed * 2))
+        source: Qt.resolvedUrl("../../assets/tech-sphere.gif")
+        opacity: status === AnimatedImage.Ready ? 1 : 0
+        Behavior on opacity { Anim { type: Anim.DefaultEffects } }
         fillMode: AnimatedImage.PreserveAspectFit
     }
 
@@ -101,9 +129,8 @@ Column {
         opacity: visible ? 1 : 0
         Behavior on opacity { Anim { type: Anim.DefaultEffects } }
 
-        actionLabel: qsTr("Hibernate")
+        actionKind: "hibernate"; actionLabel: qsTr("Hibernate")
 
-        icon: Config.session.icons.hibernate
         command: Config.session.commands.hibernate
 
         KeyNavigation.up: shutdown
@@ -113,41 +140,40 @@ Column {
     SessionButton {
         id: reboot
 
-        actionLabel: qsTr("Restart")
+        actionKind: "restart"; actionLabel: qsTr("Restart")
 
-        icon: Config.session.icons.reboot
         command: Config.session.commands.reboot
 
         KeyNavigation.up: root.hibernateSupported ? hibernate : shutdown
     }
 
     SessionButton {
-        actionLabel: qsTr("Switch desktop"); icon: "desktop_windows"; command: ["multienv-logout", "--greeter"]
+        actionKind: "switchDesktop"; actionLabel: qsTr("Switch desktop"); command: ["multienv-logout", "--greeter"]
         KeyNavigation.up: reboot
     }
 
     SessionButton {
         visible: root.canForce; opacity: visible ? 1 : 0
-        actionLabel: qsTr("Force logout"); icon: "warning"; command: ["multienv-logout", "--force", "--timeout", "0"]
+        actionKind: "force"; actionLabel: qsTr("Force logout"); command: ["multienv-logout", "--force", "--timeout", "0"]
         Behavior on opacity { Anim { type: Anim.DefaultEffects } }
     }
     Process {
-        id: logoutProcess
-        onExited: (code, status) => {
-            root.actionStarted = false;
-            root.canForce = code === 2;
-            root.pendingAction = "";
-            if (code === 0) root.screenState.session = false;
-            else root.feedback = code === 2 ? qsTr("Save remaining windows, or explicitly force logout.") : code === 3 ? qsTr("Restore the manual greeter before switching.") : qsTr("The action could not finish. Please try again.");
+        id: actionProcess
+        stderr: StdioCollector { id: actionErrors }
+        onExited: (code, status) => actionState.complete(code, actionErrors.text)
+        onRunningChanged: {
+            if (!running && actionState.busy) Qt.callLater(() => {
+                if (!actionProcess.running && actionState.busy) actionState.complete(127, actionErrors.text);
+            });
         }
     }
 
-    component SessionButton: ButtonBase {
+    component SessionButton: IconButton {
         id: button
 
         required property list<string> command
         required property string actionLabel
-        property string icon
+        required property string actionKind
         property bool needsConfirmation: true
         Accessible.role: Accessible.Button
         Accessible.name: actionLabel
@@ -159,49 +185,23 @@ Column {
             border.width: button.activeFocus ? 2 : 0
             border.color: Colours.palette.m3primary
         }
-        Row {
-            anchors.centerIn: parent; width: parent.width - 40; spacing: Tokens.spacing.medium
-            MaterialIcon { id: actionIcon; text: button.icon; color: button.onColour; fontStyle: Tokens.font.icon.large }
-            StyledText {
-                text: root.pendingAction === button.actionLabel ? qsTr("Confirm ") + button.actionLabel : button.actionLabel
-                color: button.onColour; font: Tokens.font.body.large
-                width: parent.width - actionIcon.width - parent.spacing
-                elide: Text.ElideRight
-            }
-        }
-
-        function exec(): void {
-            if (root.actionStarted) return;
-            if (needsConfirmation && root.pendingAction !== actionLabel) {
-                if (actionLabel === qsTr("Force logout")) root.feedback = qsTr("Unsaved changes can be lost.");
-                root.pendingAction = actionLabel;
-                forceActiveFocus();
-                return;
-            }
-            root.actionStarted = true;
-            var executable = command[0].split("/").pop();
-            if (executable === "multienv-logout" || executable === "daemon-os-logout") {
-                root.feedback = qsTr("Waiting for applications to close…");
-                root.pendingAction = "";
-                logoutProcess.command = command; logoutProcess.running = true;
-                return;
-            }
-            if (!SessionManager.exec(command)) Quickshell.execDetached(command);
-            root.screenState.session = false;
-        }
-
-        implicitWidth: 300
-        implicitHeight: 48
+        icon: actionState.pending === actionKind ? "check" : actionKind === "lock" ? "lock" : actionKind === "sleep" ? "bedtime" : actionKind === "logout" ? Config.session.icons.logout : actionKind === "shutdown" ? Config.session.icons.shutdown : actionKind === "restart" ? Config.session.icons.reboot : actionKind === "hibernate" ? Config.session.icons.hibernate : actionKind === "force" ? "warning" : "desktop_windows"
+        Controls.ToolTip.visible: hovered
+        Controls.ToolTip.text: actionState.pending === actionKind ? qsTr("Confirm %1").arg(actionLabel) : actionLabel
+        Controls.ToolTip.delay: 400
+        function exec(): void { actionState.request(actionKind); }
+        implicitWidth: Tokens.sizes.session.button
+        implicitHeight: Tokens.sizes.session.button
 
         inactiveColour: activeFocus ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
         inactiveOnColour: activeFocus ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
         radius: pressed ? Tokens.rounding.medium : activeFocus ? Tokens.rounding.extraLarge : Tokens.rounding.largeIncreased
-        font: Tokens.font.body.large
+        font: Tokens.font.icon.builders.large.scale(1.3).build()
         onClicked: exec()
 
         Keys.onEnterPressed: exec()
         Keys.onReturnPressed: exec()
-        Keys.onEscapePressed: { if (root.pendingAction) root.pendingAction = ""; else root.screenState.session = false; }
+        Keys.onEscapePressed: { if (!actionState.busy) { if (root.pendingAction) actionState.cancel(); else root.screenState.session = false; } }
         Keys.onPressed: event => {
             if (!Config.session.vimKeybinds)
                 return;

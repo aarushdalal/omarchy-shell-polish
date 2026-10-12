@@ -15,6 +15,7 @@ Item {
     readonly property real nonAnimWidth: content.implicitWidth
 
     readonly property bool shouldBeActive: screenState.session && Config.session.enabled
+    property bool actionBusy: false
     property real offsetScale: shouldBeActive ? 0 : 1
     property real sidebarOffset: sidebarVisible ? 14 : 0
 
@@ -29,13 +30,19 @@ Item {
         Anim { duration: root.shouldBeActive ? Motion.entryDuration : Motion.exitDuration }
     }
 
+    Connections {
+        target: content.item
+        function onActionStartedChanged() { root.actionBusy = content.item?.actionStarted ?? false; }
+    }
+
     Loader {
         id: content
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
 
-        active: root.shouldBeActive || root.visible
+        active: root.shouldBeActive || root.visible || root.actionBusy
+        onLoaded: root.actionBusy = item.actionStarted
 
         sourceComponent: Content {
             screenState: root.screenState

@@ -13,3 +13,5 @@ not replace the GPL terms on adapted Caelestia components.
 
 Canonical Omarchy wrappers are copied into Focus, Cloud and System Pulse for
 independent installation. Keep those copies byte-identical.
+
+The transparent tech GIF is CC BY-SA 4.0 by Gustavo Girardelli, derived from Geek3. It remains under those terms; see caelestia/assets/CREDITS.md. The shared SessionActionState is independent MIT code.

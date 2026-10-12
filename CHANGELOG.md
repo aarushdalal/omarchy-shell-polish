@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1 — 2026-10-12
+
+- Restore DaemonOS icon-only sizing; tracked session actions and visible failure handling on both desktops.
+- Preserve running actions across drawer closure; explicit confirmation and force controls.
+- Faster, transparent, local tech animation with theme tint and reduced-motion/visibility gating.
+
+
 ## [1.1.0] - 2026-10-11
 
 - User-owned native Omarchy control/menu clones and Session widget; DaemonOS preset-aware drawers, readiness-aware loader and confirmed session actions; exact-file rollback installer.

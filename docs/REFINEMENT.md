@@ -40,3 +40,8 @@ power-off require confirmation. Logout pauses for remaining windows and offers
 a clearly explicit force action. DaemonOS shows Hibernate only when logind
 reports it supported. Desktop switching requires manual greeter mode and never
 silently changes autologin policy.
+
+
+### Session repair 1.1.1
+
+DaemonOS uses the original large icons and native narrow sizing. Hover tooltips and temporary confirmation/error feedback identify actions. Power commands report their result; failed commands keep the panel available. The shared state fixture is `tests/SessionStateTests.qml`, runnable with Qt 6 qml. Tech animation licensing is documented in `caelestia/assets/CREDITS.md`.

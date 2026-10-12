@@ -78,7 +78,8 @@ def plan():
         operations.append((shell_config, (json.dumps(data, indent=2)+'\n').encode(), shell_config.stat().st_mode & 0o777))
     caelestia = config/'quickshell/caelestia'
     if (caelestia/'shell.qml').is_file():
-        for source in (ROOT/'caelestia').rglob('*.qml'):
+        for source in (ROOT/'caelestia').rglob('*'):
+            if not source.is_file() or (source.suffix != '.qml' and 'assets' not in source.relative_to(ROOT/'caelestia').parts): continue
             operations.append((caelestia/source.relative_to(ROOT/'caelestia'), source.read_bytes(), 0o644))
     daemon_config = config/'caelestia/shell.json'
     if daemon_config.is_file():
