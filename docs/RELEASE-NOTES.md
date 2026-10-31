@@ -1,17 +1,27 @@
-# omarchy-shell-polish 1.2.0
+# omarchy-shell-polish 1.3.0
 
 ### Highlights
 
-- **Prismatic 3D Arc Deck Theme & Wallpaper Gallery** (`community.image-picker`):
-  - **Prismatic 3D Amphitheater Arc Deck**: Replaced the static carousel with a 3D fanned arc deck. Flanking cards sweep outward and downward in an amphitheater crescent, keeping the center hero card elevated, commanding, and completely unobstructed at the top.
-  - **Hardware-Accelerated Anti-Aliased Masking**: Applied GPU `MultiEffect` alpha masks (`radius: 24`) across all cards, guaranteeing silky-smooth rounded corners and eliminating sharp image corner protrusion.
-  - **Zero-Blur 4K Progressive Rendering**: Full-resolution master backgrounds decode asynchronously on the hero card while fast thumbnails provide instant (< 1ms) navigation across collections of 2,050+ wallpapers.
-  - **Ambient Atmospheric Horizon**: Dynamic wallpaper backdrop aura that blooms across the desktop matching the active artwork with obsidian vignette shading.
-  - **Tactile Deck Scrubber & Glass HUDs**: Live timeline scrub ribbon with click-to-seek, floating frosted header with group badges and instant search, and integrated hero controls with `Apply Theme` action button.
-  - **Ergonomic Navigation**: Floating side chevron buttons (`‹` and `›`), mouse click-to-select on any side card, and extended keyboard controls (`◄ ►` for adjacent cards, `PageUp`/`PageDown` for jumping ±5 cards, `Home`/`End` for boundaries, `Escape` to clear search or close).
-- **Installer Integration** (`tools/install_refinement.py`):
-  - Seamlessly installs, manages, and rolls back `community.image-picker` alongside community panels with executable script permissions properly maintained.
+- **Interactive 3D Motion, Harmony Swatches & Favoriting Suite** (`community.image-picker`):
+  - **Dynamic 3D Parallax Tilt & Moving Glass Sheen**: The hero card tracks cursor position in real-time with responsive 3D perspective tilt ($X$ and $Y$ rotation axes) and a moving specular glass reflection across the card face.
+  - **Dynamic Theme Color Harmony Swatches**: Displays live color swatches (accent, background, foreground) parsed from theme metadata inside a frosted glass pill on the hero card.
+  - **Theme Favoriting & Star Pinning**: Dedicated star button (`★`/`☆`) on the hero card and `Ctrl+S` shortcut, persisted directly in `~/.local/state/omarchy/favorite-themes.json`.
+  - **Favorites Filter Mode**: Instant toggle in the top floating island (`★ Favorites`) to filter the entire Arc Deck down to only starred themes with updated item counts.
+  - **Surprise Me / Roulette Shuffle**: Interactive button (`󰒝`) and `Ctrl+R` shortcut that smoothly animates the deck to a random theme.
+  - **Immersive Fullscreen Wallpaper Peeking**: `Space` key or `󰍹` button that fades out all UI chrome and scales the master wallpaper to fullscreen, with a floating exit pill.
+  - **Acoustic Mechanical Tick Feedback**: Mechanical audio tick on card flips and scrubbing using `canberra-gtk-play`, toggleable with `Ctrl+M` or the audio button (`󰕾`/`󰖁`).
+  - **Touchpad & Mouse Wheel Navigation**: Native `WheelHandler` support for smooth two-finger touchpad swiping and mouse wheel navigation across the entire deck.
+  - **Refined Bottom HUD**: Polished shortcuts dock with clear badges for all deck interactions (`◄ ► Deck`, `Enter Apply`, `Space Peek`, `Ctrl+R Shuffle`, `Ctrl+S Star`, `Ctrl+M Sound`, `Esc Close`).
 
-### Privacy & Validation
+### Included Features & Enhancements
 
-Current payload privacy scan passed with 0 findings. All components validated on Qt 6 / Quickshell 0.3.1 / Hyprland 0.56.2.
+- **Prismatic 3D Amphitheater Arc Deck**: Flanking cards fan outward and curve downward in a crescent arc to keep the central hero card commanding and unblocked at the top.
+- **Hardware-Accelerated Anti-Aliased Clipping**: GPU `MultiEffect` alpha masks prevent rectangular image corners from bleeding past the rounded card borders.
+- **Progressive 4K Master Wallpaper Pipeline**: Instant low-latency preview thumbnails decoupled from crystal-clear master full-resolution wallpapers on the active card.
+- **Dynamic Horizon Ambient Backdrop**: Full-screen wallpaper aura blooming beneath the gallery with subtle obsidian vignette shading.
+- **Tactile Deck Scrubber**: Timeline ribbon supporting instant drag and seek across 2,050+ wallpapers.
+
+### Validation
+
+- Privacy and payload validation: `python3 tools/release_privacy_check.py` (0 findings).
+- Zero corner-clipping bleed and verified 60 FPS fluid rendering.

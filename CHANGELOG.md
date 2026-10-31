@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.0 — 2026-10-31
+
+- **Interactive 3D Motion, Harmony Swatches & Favoriting Suite** (`plugins/community.image-picker`):
+  - **Dynamic 3D Parallax Tilt & Moving Sheen**: Hero card tracks cursor motion with real-time 3D $X$/$Y$ perspective tilt and a moving specular glass sheen reflecting across the active card surface.
+  - **Dynamic Theme Color Harmony Swatches**: Displays live color palette dots (accent, background, foreground) extracted directly from theme metadata in a frosted pill on the hero card.
+  - **Theme Favoriting & Star Pinning**: Clickable star icon (`★`/`☆`) and `Ctrl+S` shortcut with persistent storage in `~/.local/state/omarchy/favorite-themes.json`.
+  - **Favorites-Only Deck Filter**: Top HUD toggle button (`★ Favorites (N)`) that filters the entire Arc Deck to show only starred themes with responsive count badges.
+  - **Surprise Me / Roulette Shuffle**: Interactive shuffle button (`󰒝`) in top HUD and `Ctrl+R` shortcut to quickly discover and animate to a random theme.
+  - **Clean Fullscreen Wallpaper Peeking**: Fullscreen button (`󰍹`) or `Space` key that cleanly fades all UI chrome and expands the master wallpaper into an immersive full-screen view.
+  - **Acoustic Mechanical Audio Feedback**: Optional tactile tick on card flips, scrubbing, and toggles powered by `canberra-gtk-play`, toggleable with `Ctrl+M` or the top HUD sound button.
+  - **Smooth Touchpad & Mouse Wheel Scrolling**: Integrated Qt 6 `WheelHandler` enabling smooth two-finger touchpad swipes and mouse wheel scrubbing across the deck.
+  - **Ergonomic Shortcuts HUD**: Updated bottom dock with crystal-clear shortcut indicators (`◄ ► Deck`, `Enter Apply`, `Space Peek`, `Ctrl+R Shuffle`, `Ctrl+S Star`, `Ctrl+M Sound`, `Esc Close`).
+
 ## 1.2.0 — 2026-10-31
 
 - **Prismatic 3D Arc Deck Theme & Wallpaper Selector** (`plugins/community.image-picker`):
