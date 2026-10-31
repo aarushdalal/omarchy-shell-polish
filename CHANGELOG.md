@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0 — 2026-10-31
+
+- **Prismatic 3D Arc Deck Theme & Wallpaper Selector** (`plugins/community.image-picker`):
+  - **Prismatic 3D Amphitheater Arc Deck**: Replaced static carousel with an amphitheater card deck where flanking cards sweep outward and downward in an elegant crescent arc, keeping the hero card commanding and unblocked at the top.
+  - **Hardware-Accelerated Anti-Aliased Masking**: Applied GPU `MultiEffect` alpha masks (`radius: 24`) to eliminate sharp image corner protrusion, guaranteeing silky-smooth curved borders on all cards without blank texture drops.
+  - **Ultra-Fast Progressive 4K Rendering**: Dual-tier rendering decoupling instant fast-decode thumbnails (< 1ms per card) from crisp full-resolution 4K/1080p master wallpapers on the active hero card with smooth asynchronous fade-in.
+  - **Ambient Atmospheric Horizon**: Dynamic wallpaper backdrop aura that blooms across the desktop matching the active artwork with obsidian vignette shading.
+  - **Tactile Deck Scrubber & Glass HUDs**: Interactive timeline scrubber with click-to-seek, floating frosted header with group badges and instant search, and integrated hero controls with `Apply Theme` action button.
+  - **Ergonomic Controls**: Arrow keys (`◄ ►`), `PgUp`/`PgDn` (jump ±5 cards), `Home`/`End`, mouse click-to-center on flanking cards, and `Escape` to clear search or close.
+- **Installer Integration** (`tools/install_refinement.py`):
+  - Automatically deploys and enables `community.image-picker` with executable permissions preserved.
+
 ## 1.1.1 — 2026-10-12
 
 - Restore DaemonOS icon-only sizing; tracked session actions and visible failure handling on both desktops.

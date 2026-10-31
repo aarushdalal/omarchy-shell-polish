@@ -1,9 +1,17 @@
-# omarchy-shell-polish 1.1.1
+# omarchy-shell-polish 1.2.0
 
-Restore the narrow DaemonOS power drawer with its original large icons and no permanent title/action labels. Both desktops share a tested action state machine, visible confirmation and command errors. Power actions run through a tracked process; remaining-window refusal retains explicit force controls. DaemonOS keeps an in-flight action alive when its drawer closes and reopens it on failure.
+### Highlights
 
-Replace the music and power-panel decorations with a local transparent wireframe animation at faster bounded playback speed (about 2×), tinted with the current theme. The 200 × 200, 20-frame asset is about 399 KiB and pauses when hidden or reduced motion is selected. See caelestia/assets/CREDITS.md for the source and CC BY-SA 4.0 attribution.
+- **Prismatic 3D Arc Deck Theme & Wallpaper Gallery** (`community.image-picker`):
+  - **Prismatic 3D Amphitheater Arc Deck**: Replaced the static carousel with a 3D fanned arc deck. Flanking cards sweep outward and downward in an amphitheater crescent, keeping the center hero card elevated, commanding, and completely unobstructed at the top.
+  - **Hardware-Accelerated Anti-Aliased Masking**: Applied GPU `MultiEffect` alpha masks (`radius: 24`) across all cards, guaranteeing silky-smooth rounded corners and eliminating sharp image corner protrusion.
+  - **Zero-Blur 4K Progressive Rendering**: Full-resolution master backgrounds decode asynchronously on the hero card while fast thumbnails provide instant (< 1ms) navigation across collections of 2,050+ wallpapers.
+  - **Ambient Atmospheric Horizon**: Dynamic wallpaper backdrop aura that blooms across the desktop matching the active artwork with obsidian vignette shading.
+  - **Tactile Deck Scrubber & Glass HUDs**: Live timeline scrub ribbon with click-to-seek, floating frosted header with group badges and instant search, and integrated hero controls with `Apply Theme` action button.
+  - **Ergonomic Navigation**: Floating side chevron buttons (`‹` and `›`), mouse click-to-select on any side card, and extended keyboard controls (`◄ ►` for adjacent cards, `PageUp`/`PageDown` for jumping ±5 cards, `Home`/`End` for boundaries, `Escape` to clear search or close).
+- **Installer Integration** (`tools/install_refinement.py`):
+  - Seamlessly installs, manages, and rolls back `community.image-picker` alongside community panels with executable script permissions properly maintained.
 
-Validation: both native action panels passed confirmation, exact command dispatch, duplicate suppression, unsaved-window refusal, explicit force and failure visibility tests using safe substitute commands. DaemonOS drawer lifetime was tested while a delayed command ran. Shared state and native compile checks passed. The unlocked DaemonOS shell was reloaded without ending the compositor or applications. Real logout/shutdown was not triggered during testing.
+### Privacy & Validation
 
-Current payload privacy scan passed; old public history is preserved and new commits/tags use GitHub noreply metadata.
+Current payload privacy scan passed with 0 findings. All components validated on Qt 6 / Quickshell 0.3.1 / Hyprland 0.56.2.

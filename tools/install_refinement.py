@@ -58,7 +58,9 @@ def plan():
         data = json.loads(shell_config.read_text())
         names = {f'omarchy.{name}': f'community.{name}' for name in ('network', 'bluetooth', 'audio', 'power', 'monitor', 'menu')}
         for source in sorted((ROOT/'plugins').rglob('*'), key=lambda path: path.name == 'manifest.json'):
-            if source.is_file(): operations.append((config/'omarchy/plugins'/source.relative_to(ROOT/'plugins'), source.read_bytes(), 0o644))
+            if source.is_file():
+                mode = 0o755 if source.name.endswith('.sh') or os.access(source, os.X_OK) else 0o644
+                operations.append((config/'omarchy/plugins'/source.relative_to(ROOT/'plugins'), source.read_bytes(), mode))
         sections = data.setdefault('bar', {}).setdefault('layout', {})
         for entries in sections.values():
             for entry in entries:
@@ -67,11 +69,11 @@ def plan():
         if not any(entry.get('id') == 'community.session' for entry in right): right.append({'id': 'community.session'})
         enabled = data.setdefault('plugins', [])
         enabled[:] = [{'id': entry} if isinstance(entry, str) else entry for entry in enabled]
-        for identifier in [*names.values(), 'community.session', 'community.osd', 'community.notifications']:
+        for identifier in [*names.values(), 'community.session', 'community.osd', 'community.notifications', 'community.image-picker']:
             if not any((entry if isinstance(entry, str) else entry.get('id')) == identifier for entry in enabled): enabled.append({'id': identifier})
         disabled = data.setdefault('disabledPlugins', [])
         restores = data.setdefault('cloneSourceRestores', [])
-        for native_id in ['omarchy.menu', 'omarchy.osd', 'omarchy.notifications']:
+        for native_id in ['omarchy.menu', 'omarchy.osd', 'omarchy.notifications', 'omarchy.image-picker']:
             if native_id not in disabled: disabled.append(native_id)
             clone = native_id.replace('omarchy.', 'community.')
             if clone not in restores: restores.append(clone)

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "community.image-picker",
+  "name": "Refined Theme & Wallpaper Gallery",
+  "version": "1.2.0",
+  "author": "Omarchy Community",
+  "description": "Ultra-fast progressive theme and wallpaper selector with luxury 3D card carousel, instant thumbnail decoding, and search filtering",
+  "kinds": [
+    "overlay"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "overlay": "ImagePicker.qml"
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.image-picker"
+  }
+}
