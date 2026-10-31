@@ -115,9 +115,15 @@ Apply by merging into `~/.config/hypr/bindings.lua` and running `hyprctl reload`
 
 ## Showcase
 
-**Omarchy Desktop Showcase**
+**Latest supplied desktop showcase — 30 October 2026** · 2 min 39 sec · Full HD at 60 FPS · soundtrack included.
 
-https://github.com/user-attachments/assets/7288605e-4853-4e2e-b077-e039577fb0aa
+[![Latest Omarchy Shell Polish showcase](assets/showcase/desktop-showcase-2026-10-30.gif)](https://aarushdalal.github.io/omarchy-shell-polish/#showcase)
+
+[Watch the full showcase](https://aarushdalal.github.io/omarchy-shell-polish/#showcase) · [Download WebM](https://aarushdalal.github.io/omarchy-shell-polish/assets/showcase/desktop-showcase-2026-10-30.webm) · [What the video shows](docs/SHOWCASE.md)
+
+The animated image combines four short highlights; the player contains the complete edited recording with its soundtrack. It replaces the previous README recording and the gallery's sample illustration.
+
+This is my configured desktop: floating shell controls, glass windows, terminal layouts, system panels, wallpaper changes and animation presets. The recording includes companion tools and artwork beyond this repository's portable snippets. See the [showcase guide](docs/SHOWCASE.md) for scope and chapter notes.
 
 ---
 
@@ -127,4 +133,4 @@ https://github.com/user-attachments/assets/7288605e-4853-4e2e-b077-e039577fb0aa
 
 ## Refinement and privacy update
 
-Floating native controls · profile identity preserved. Current showcases use sample data; see [release privacy](docs/RELEASE-PRIVACY.md). Existing Git history is preserved.
+Floating native controls · profile identity preserved. The latest video shows the recorded desktop; the session-component fixture uses sample data. See [release privacy](docs/RELEASE-PRIVACY.md). Existing Git history is preserved.

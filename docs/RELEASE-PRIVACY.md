@@ -1,8 +1,8 @@
 # Release privacy
 
-Current release files use portable paths and sample data. Workstation screenshots,
-recordings, logs, Git metadata copies and runtime configuration are not release assets.
-The sample SVG is a design illustration, not a claim of a captured live desktop.
+Current release files use portable paths. The dated desktop showcase is the user-supplied recording selected for publication, with its soundtrack retained and container metadata removed. Its poster and short README animation derive from the same recording. The session-component image remains a sample-data layout fixture. Runtime logs, credentials and Git metadata copies are not release assets.
+
+The showcase depicts the configured desktop rather than claiming that every visible tool or artwork is supplied by this repository. Reviewed media is recorded by SHA-256 in tools/approved-preview-media.json. The older SVG remains an illustration asset, while the current gallery plays the dated recording.
 
 Existing Git history is preserved. Historical commits and media may retain older
 metadata; this cleanup does not remove previously published copies. New commits use
