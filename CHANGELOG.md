@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.1] - 2026-11-01
+
+- Show per-item loading and unavailable states in the Theme Deck while retaining valid same-item thumbnails.
+- Preserve existing card motion, sound, favorites, search, peek and explicit Apply; correct preview diagnostics.
+- Add exact-source hidden Wayland compilation and isolated Qt image/selection/export regression checks. No real desktop theme is applied by these tests.
+
 ## 1.3.0 — 2026-10-31
 
 - **Interactive 3D Motion, Harmony Swatches & Favoriting Suite** (`plugins/community.image-picker`):
