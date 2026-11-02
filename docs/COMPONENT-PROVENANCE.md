@@ -15,3 +15,5 @@ Canonical Omarchy wrappers are copied into Focus, Cloud and System Pulse for
 independent installation. Keep those copies byte-identical.
 
 The transparent tech GIF is CC BY-SA 4.0 by Gustavo Girardelli, derived from Geek3. It remains under those terms; see caelestia/assets/CREDITS.md. The shared SessionActionState is independent MIT code.
+
+The optional Modern Lock view derives from Bibek Bhusal's MIT Modern Lock plugin; its MIT license is retained in reference/modern-lock/LICENSE. New read-only telemetry/parser and visual refinements are provided with source. No upstream authentication service or host credentials are included. Shared popup copies retain host-specific geometry/focus extensions where present; common material values and dashboard tab/page helpers are synchronized without replacing those extensions.

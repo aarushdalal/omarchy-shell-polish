@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "community.audio",
   "name": "Audio \u00b7 Refined",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Omarchy",
   "description": "Volume slider, output picker, per-app mixer",
   "kinds": [

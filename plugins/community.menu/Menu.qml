@@ -95,7 +95,7 @@ Item {
     if (isPresented) {
       exitAnim.stop()
       entryAnim.restart()
-      sweepAnim.restart()
+      root.sweepProgress = 1.0 // Quiet material: no decorative laser sweep.
     } else {
       entryAnim.stop()
       exitAnim.restart()
@@ -103,15 +103,15 @@ Item {
   }
 
   onActiveMenuChanged: {
-    if (typeof searchIconBounce !== "undefined" && searchIconBounce) searchIconBounce.restart()
-    if (typeof badgeBounceAnim !== "undefined" && badgeBounceAnim) badgeBounceAnim.restart()
+    if (!Motion.reducedMotion && typeof searchIconBounce !== "undefined" && searchIconBounce) searchIconBounce.restart()
+    if (!Motion.reducedMotion && typeof badgeBounceAnim !== "undefined" && badgeBounceAnim) badgeBounceAnim.restart()
   }
 
   // Dynamic Animation Engine Integration (Universal Motion Engine Singleton)
   readonly property string currentAnimationStyle: Motion.activePreset
-  readonly property int animDuration: Motion.entryDuration
-  readonly property var animEasingType: Motion.easeExpressive
-  readonly property real animOvershoot: Motion.springOvershoot
+  readonly property int animDuration: Motion.reducedMotion ? 1 : Math.min(240, Motion.entryDuration)
+  readonly property var animEasingType: Motion.easeStandard
+  readonly property real animOvershoot: 0
 
   property real entryProgress: 0.0
   property real sweepProgress: 0.0
@@ -131,7 +131,7 @@ Item {
   NumberAnimation {
     id: exitAnim
     target: root; property: "entryProgress"; to: 0
-    duration: Polish.MotionAdapter.exitDuration; easing.type: Easing.InQuad
+    duration: Motion.reducedMotion ? 1 : Math.min(160, Polish.MotionAdapter.exitDuration); easing.type: Easing.InQuad
   }
 
   NumberAnimation {
@@ -162,11 +162,11 @@ Item {
     }
   }
   // Semantic tokens from universal adaptive Theme
-  property color background: Theme.surface
+  property color background: Qt.rgba(OmarchyPalette.Color.background.r, OmarchyPalette.Color.background.g, OmarchyPalette.Color.background.b, 0.62)
   property color foreground: Theme.textPrimary
   property color border: Theme.borderSubtle
-  property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
-  property color scrim: Theme.scrim
+  property var borderSpec: Border.surfaceSpec("menu", "border", border, 1)
+  property color scrim: Qt.alpha(OmarchyPalette.Color.background, 0.08)
   property color selectedBackground: Theme.surfaceSelected
   property color selectedText: Theme.textOnAccent
   property color selectedBorder: Theme.borderFocus

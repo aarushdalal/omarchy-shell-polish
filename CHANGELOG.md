@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2026-11-02
+
+- Unify user-owned popup materials at restrained dark glass and simplify menu presentation without removing routes or controls.
+- Add Caelestia SearchBar material/focus refinement and hidden/reduced-motion ripple guards.
+- Add an optional Modern Lock view with a compact date, read-only CPU/RAM/battery line, masked password input and finite motion. Authentication remains in the existing host.
+- Include opt-in shared Hyprland and semantic shell material references; preserve existing configuration when merging. No installer changes to authentication or power policy.
+
 ## [1.3.1] - 2026-11-01
 
 - Show per-item loading and unavailable states in the Theme Deck while retaining valid same-item thumbnails.

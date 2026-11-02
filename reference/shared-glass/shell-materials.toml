@@ -1,0 +1,14 @@
+# Merge sections into ~/.config/omarchy/shell.toml; preserve other keys.
+[bar]
+background-alpha = 0.94
+[popups]
+background-alpha = 0.94
+[menu]
+background-alpha = 0.62
+scrim-alpha = 0.08
+[notifications]
+background-alpha = 0.94
+[tooltip]
+background-alpha = 0.96
+[polkit]
+background-alpha = 0.94
