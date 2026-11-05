@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.6.0] - 2026-11-05
+
+- Add a capability-aware universal monitor for current/future apps, native recipe setup and once-per-app compatibility notifications.
+- Add native background-only glass references, solid foreground content and shared gentle blur.
+- Replace embedded Spotify wallpaper with native alpha; remove decorative gradients and fix cinema backdrop/navigation layering while preserving text masks.
+- Include Files, ChatGPT, AntiGravity app and Foot settings, guarded runtime recipes and source-only licensed Spotify helper.
+- Add private recovery-kit tools and portable setup documentation. AntiGravity IDE and pet changes are excluded.
+
+## [1.5.0] - 2026-11-03
+
+- **Project Daemon — Spotify Live Theme Synchronization Suite** (`reference/spotify-sync/`):
+  - **Zero-Restart Live Synchronization**: Injects `daemon-spotify-sync.js` into Spotify via Spicetify, updating design tokens and CSS variables over Server-Sent Events (`http://127.0.0.1:8974/events`) in < 2ms without interrupting audio playback or restarting Spotify.
+  - **Live Desktop Wallpaper Aura Integration**: Streams the active desktop wallpaper (`~/.local/state/omarchy/current/background`) via loopback HTTP (`/wallpaper`) into a hardware-accelerated fixed background canvas with reduced blur (`blur(2px)`) and OLED contrast optimization.
+  - **Seamless Edge-to-Edge Layout**: Fully unifies the left navigation bar, right sidebar panel, bottom playback bar, and top bar to transparent backings, displaying an unbroken desktop wallpaper canvas across the entire application.
+  - **Dynamic Gradient Purge & Plugin Precedence Enforcer**:
+    - Automatically strips Spotify's dynamic color extraction gradients from recommendation rails and album shelves.
+    - Neutralizes recommendation hero/billboard colored boxes, letting text and artwork float directly over the wallpaper.
+    - Monitors `document.head` via `MutationObserver` to enforce stylesheet precedence over third-party Spicetify extensions and Marketplace snippets, guaranteeing unbroken visual consistency.
+  - **Zero-Flash Local Caching**: Persists active palette in `localStorage` for instant correct styling on launch before the SSE handshake completes.
+  - **Omarchy Theme Sync Adapter**: Adds `SpotifyAdapter` in `~/.local/lib/omarchy-theme-sync/adapters/spotify.py`, connecting desktop theme changes directly to the bridge.
+  - **Systemd User Service & Management CLI**: Deploys `daemon-spotify-sync.service` and `daemon-spotify-sync` CLI for one-command status checks, live triggers, and logs.
+
 ## [1.4.0] - 2026-11-02
 
 - Unify user-owned popup materials at restrained dark glass and simplify menu presentation without removing routes or controls.

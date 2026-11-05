@@ -1,0 +1,27 @@
+#!/bin/bash
+# ==============================================================================
+# Spotify Launcher with AMD Mesa Hardware Acceleration & EGL Guard
+# ==============================================================================
+
+# Unset WAYLAND_DISPLAY so CEF's hardcoded X11-mode GPU process cleanly binds to
+# X11/GLX on XWayland instead of attempting null Wayland proxy calls and crashing.
+unset WAYLAND_DISPLAY
+
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
+
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+SPOTIFY_USER_FLAGS=()
+
+if [[ -f "${XDG_CONFIG_HOME}/spotify-flags.conf" ]]; then
+    mapfile -t SPOTIFY_USER_FLAGS <<< "$(grep -v '^#' "${XDG_CONFIG_HOME}/spotify-flags.conf")"
+fi
+
+# Native background alpha keeps artwork and glyphs opaque. Disable on unvalidated updates.
+spotify_glass_helper="${XDG_CONFIG_HOME}/spicetify/daemon-glass/spotify-alpha.so"
+if [[ -r "$spotify_glass_helper" ]] &&
+   LC_ALL=C readelf -n /opt/spotify/spotify 2>/dev/null | grep -q 'Build ID: e18cef49a8467a1551f4d354b4e0df8d6bf3e833' &&
+   LC_ALL=C readelf -n /opt/spotify/libcef.so 2>/dev/null | grep -q 'Build ID: 8b7a6ad67d1f3469f12a69f239512bfb21f9f151'; then
+    export LD_AUDIT="${LD_AUDIT:+$LD_AUDIT:}$spotify_glass_helper"
+fi
+
+exec /opt/spotify/spotify "${SPOTIFY_USER_FLAGS[@]}" "$@"

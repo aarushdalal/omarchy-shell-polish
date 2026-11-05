@@ -1,11 +1,11 @@
-# Optional balanced glass references
+# Optional shared glass references
 
-These are opt-in references and are not applied by the installer. Merge the TOML keys into existing sections in `~/.config/omarchy/shell.toml`; do not replace other settings. RGB, type, borders and per-theme roles continue to come from the current theme. The user override survives theme changes.
+Version 1.6 keeps normal app content at 100% opacity and uses application-native background transparency, superseding the earlier whole-window fading preset. Merge visual-polish.lua last into the desired Hyprland 0.56 Lua profiles; retain a before copy and validate both profiles plus hyprctl configerrors. The general installer does not apply this reference.
 
-For Hyprland 0.56 Lua, place `visual-polish.lua` in `~/.config/hypr/shared/` and load it last from each desired desktop profile with `require("hypr.shared.visual-polish")`. Verify both complete configurations and check the active compositor's configuration errors before keeping it. The rules intentionally affect all normal app windows, including fullscreen windows; they change complete-window opacity rather than rewriting application content. Focused/inactive/fullscreen values are 75/70/82 percent. Existing per-app opacity exceptions are overridden. Keep an exact copy of your previous config to restore a different preference.
+Shared blur uses size 4 / two passes, optimization enabled and restrained contrast/noise. The GTK 4.24 workaround disables its empty background-effect region advertisement, allowing the compositor to supply blur. Native background settings are in [background-glass](../background-glass/README.md). Applications without native alpha remain opaque. No pet window rule is included.
 
-Blur is enabled with size 12 / three passes, optimization enabled and restrained contrast/noise. This is a material choice; no compositor FPS, power saving or universal performance improvement is claimed. Session-lock privacy and authentication remain separate. The optional lock view is in the adjacent modern-lock reference.
+shell-materials.toml remains an optional semantic material reference. Merge its keys into existing sections and retain theme RGB, type, borders and per-theme roles. picker-layout.ini is a layout-only Fuzzel reference: retain current colors and a readable translucent backing; validate with fuzzel --check-config.
 
-Syntax references: https://wiki.hypr.land/0.56.0/Configuring/Basics/Window-Rules/ and https://wiki.hypr.land/configuring/core/config-options/
+No compositor FPS, power saving or universal performance improvement is claimed. Session-lock privacy and authentication remain separate; the adjacent modern-lock reference does not change the authentication host.
 
-`picker-layout.ini` is a layout-only Fuzzel reference. Merge its keys with the current theme colors; use a near-opaque translucent background (for example alpha `ed`) and validate with `fuzzel --check-config`. The host power menu retains its existing actions and policy.
+Syntax: https://wiki.hypr.land/configuring/core/rules/window-rules/ and https://wiki.hypr.land/configuring/core/config-options/

@@ -1,36 +1,42 @@
--- Omarchy Shell Polish: Frosted Glass & Border Snippet
--- Append or merge into ~/.config/hypr/looknfeel.lua
-
+-- Background-only glass in both profiles. Native content stays fully opaque.
+-- Override avoids multiplying several older opacity rules together.
 hl.config({
-  general = {
-    border_size = 2,
-    gaps_in = 5,
-    gaps_out = 10,
-  },
   decoration = {
-    rounding = 12,
-    dim_inactive = true,
-    dim_strength = 0.10,
-
+    active_opacity = 1.0,
+    inactive_opacity = 1.0,
+    fullscreen_opacity = 1.0,
     blur = {
       enabled = true,
-      size = 7,
-      passes = 3,
+      size = 4,
+      passes = 2,
       new_optimizations = true,
-      xray = false,
       ignore_opacity = true,
-      noise = 0.012,
-      contrast = 0.92,
-      brightness = 0.88,
-      vibrancy = 0.30,
+      xray = false,
+      noise = 0.008,
+      contrast = 0.95,
+      brightness = 1.0,
+      vibrancy = 0.08,
       popups = true,
-    },
-
-    shadow = {
-      enabled = true,
-      range = 20,
-      render_power = 2,
-      color = "rgba(00000038)",
     },
   },
 })
+hl.window_rule({
+  match = { class = ".*" },
+  opacity = "1.0 override 1.0 override 1.0 override",
+  no_blur = false,
+})
+hl.layer_rule({
+  match = { namespace = "^(omarchy-.*|caelestia-.*|quickshell|fuzzel)$" },
+  blur = true,
+  ignore_alpha = 0.20,
+})
+hl.layer_rule({
+  match = { namespace = "fuzzel" },
+  no_anim = false,
+  animation = "popin 96%",
+})
+
+
+-- GTK 4.24 otherwise advertises an empty blur region to Hyprland 0.56.
+-- Keep the user-approved gentle compositor blur consistent for GTK apps too.
+hl.env("GDK_WAYLAND_DISABLE", "ext_background_effect_manager_v1")

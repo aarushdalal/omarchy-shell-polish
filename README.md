@@ -2,6 +2,8 @@
 
 > **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, and ergonomic keybinding polish.
 
+Version 1.6 adds native background-only glass for Spotify, Files, ChatGPT, the AntiGravity app and Foot, with solid foreground content and gentle compositor blur. Spotify fullscreen color backdrops and decorative gradients are removed. See [background glass setup](reference/background-glass/README.md) and [Spotify live sync](reference/spotify-sync/README.md). The optional [universal monitor](reference/background-glass/universal/README.md) covers current/future installed desktop apps and notifies when a native theme recipe is missing. Pet changes are excluded.
+
 Version 1.4 adds a quieter shared glass material, compact menu motion, a Caelestia SearchBar refinement and an optional minimal live-status lock view. See [balanced glass references](reference/shared-glass/README.md) and [lock integration boundaries](reference/modern-lock/README.md).
 
 Version 1.1 adds preset-aware native controls for Omarchy and a Caelestia overlay for DaemonOS. It preserves both desktop identities and retains the original optional snippets. See [Refinement and rollback](docs/REFINEMENT.md) and [component licensing](docs/COMPONENT-PROVENANCE.md).

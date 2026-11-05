@@ -1,14 +1,14 @@
--- User-requested balanced glass for application windows in both desktop profiles.
+-- Background-only glass in both profiles. Native content stays fully opaque.
 -- Override avoids multiplying several older opacity rules together.
 hl.config({
   decoration = {
-    active_opacity = 0.75,
-    inactive_opacity = 0.70,
-    fullscreen_opacity = 0.82,
+    active_opacity = 1.0,
+    inactive_opacity = 1.0,
+    fullscreen_opacity = 1.0,
     blur = {
       enabled = true,
-      size = 12,
-      passes = 3,
+      size = 4,
+      passes = 2,
       new_optimizations = true,
       ignore_opacity = true,
       xray = false,
@@ -22,7 +22,7 @@ hl.config({
 })
 hl.window_rule({
   match = { class = ".*" },
-  opacity = "0.75 override 0.70 override 0.82 override",
+  opacity = "1.0 override 1.0 override 1.0 override",
   no_blur = false,
 })
 hl.layer_rule({
@@ -35,3 +35,8 @@ hl.layer_rule({
   no_anim = false,
   animation = "popin 96%",
 })
+
+
+-- GTK 4.24 otherwise advertises an empty blur region to Hyprland 0.56.
+-- Keep the user-approved gentle compositor blur consistent for GTK apps too.
+hl.env("GDK_WAYLAND_DISABLE", "ext_background_effect_manager_v1")

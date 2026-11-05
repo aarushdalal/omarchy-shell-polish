@@ -1,0 +1,29 @@
+/* Background alpha only. Icons, labels and thumbnails retain full opacity. */
+window.nautilus-window {
+  background: rgba(0, 0, 0, 0.76);
+  backdrop-filter: blur(5px);
+  --window-bg-color: transparent;
+  --view-bg-color: transparent;
+  --sidebar-bg-color: transparent;
+  --sidebar-backdrop-color: transparent;
+  --headerbar-bg-color: transparent;
+  --headerbar-backdrop-color: transparent;
+  --secondary-sidebar-bg-color: transparent;
+  --secondary-sidebar-backdrop-color: transparent;
+}
+window.nautilus-window > contents,
+window.nautilus-window .background,
+window.nautilus-window .view,
+window.nautilus-window .sidebar,
+window.nautilus-window scrolledwindow,
+window.nautilus-window gridview,
+window.nautilus-window columnview,
+window.nautilus-window listview,
+window.nautilus-window headerbar {
+  background-color: transparent;
+}
+/* Menus retain a readable solid surface; no widget/group opacity is used. */
+window.nautilus-window popover > contents,
+window.nautilus-window dialog {
+  background: var(--popover-bg-color, #101010);
+}

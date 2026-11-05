@@ -1,0 +1,10 @@
+/* Native background alpha only; text, icons, images and content keep opacity 1. */
+html { background: transparent !important; }
+body { background: rgba(0, 0, 0, 0.74) !important; }
+#root,
+.bg-background,
+.bg-sidebar,
+.bg-sidebar-background {
+  background-color: transparent !important;
+}
+:fullscreen::backdrop { background: transparent !important; }

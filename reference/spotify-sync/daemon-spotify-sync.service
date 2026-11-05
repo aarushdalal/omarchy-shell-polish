@@ -1,0 +1,14 @@
+[Unit]
+Description=Daemon Spotify Live Theme Sync Bridge
+Documentation=https://github.com/aarushdalal/omarchy-shell-polish
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/daemon-spotify-sync-bridge
+Restart=on-failure
+RestartSec=3
+Slice=app.slice
+
+[Install]
+WantedBy=default.target

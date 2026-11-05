@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Launch Antigravity with background-only glass; stock app is the safe fallback."""
+from pathlib import Path
+import os
+import subprocess
+import sys
+
+program = '/opt/Antigravity/antigravity'
+builder = Path.home() / '.config/Antigravity/daemon-glass/build-runtime.py'
+if not any(a in ('--headless', '--ozone-platform=headless') for a in sys.argv[1:]):
+    try:
+        candidate = subprocess.check_output([sys.executable, str(builder)], text=True, timeout=30).strip()
+        if Path(candidate).is_file():
+            program = candidate
+    except (OSError, subprocess.SubprocessError):
+        print('Antigravity glass was not rebuilt; opening the installed application.', file=sys.stderr)
+os.execv(program, [program, *sys.argv[1:]])

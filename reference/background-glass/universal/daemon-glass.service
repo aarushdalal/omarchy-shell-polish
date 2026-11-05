@@ -1,0 +1,16 @@
+[Unit]
+Description=Native background glass recipes and app compatibility notifications
+After=graphical-session-pre.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/daemon-glass watch
+Restart=on-failure
+RestartSec=10
+Nice=10
+CPUWeight=20
+UMask=0077
+
+[Install]
+WantedBy=graphical-session.target

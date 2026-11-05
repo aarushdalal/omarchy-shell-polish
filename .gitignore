@@ -27,3 +27,8 @@ Thumbs.db
 .vscode/
 .idea/
 .git-corrupted/
+
+# Local-only glass recovery data
+reference/background-glass/backup/restore-kit/
+reference/background-glass/backup/backup-records/
+reference/background-glass/backup/*verification.json
