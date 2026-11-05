@@ -32,6 +32,13 @@ class UniversalGlass(unittest.TestCase):
         original=p.read_bytes();self.module.native_recipe('kitty',True)
         self.assertEqual(p.read_bytes(),original)
 
+    def test_existing_files_theme_is_retained_and_import_added(self):
+        p = self.home/'.config/gtk-4.0/nautilus-glass.css';p.parent.mkdir(parents=True)
+        p.write_text('window.nautilus-window { background: rgba(0,0,0,.51); }\n')
+        original=p.read_bytes();self.module.native_recipe('nautilus',True)
+        self.assertEqual(p.read_bytes(),original)
+        self.assertIn('nautilus-glass.css',(p.parent/'gtk.css').read_text())
+
     def test_dry_run_writes_nothing_and_does_not_claim_application(self):
         status, _ = self.module.native_recipe('foot', False)
         self.assertEqual(status,'would-configure')

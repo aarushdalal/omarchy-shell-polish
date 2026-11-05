@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.1] - 2026-11-05
+
+- Preserve an existing Files glass CSS recipe during automatic scans while still adding a missing import.
+- Add a regression for custom Files tint/alpha preservation.
+
 ## [1.6.0] - 2026-11-05
 
 - Add a capability-aware universal monitor for current/future apps, native recipe setup and once-per-app compatibility notifications.

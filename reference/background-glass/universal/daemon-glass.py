@@ -165,7 +165,10 @@ def native_recipe(kind, apply):
         source = Path(__file__).parent/'recipes/nautilus-glass.css'
         if not source.exists():
             return 'needs-theme', 'Files glass CSS recipe is missing'
-        changed = save_changed(HOME/'.config/gtk-4.0/nautilus-glass.css', source.read_text(), apply)
+        target = HOME/'.config/gtk-4.0/nautilus-glass.css'
+        # A pre-existing recipe may contain the user's own tint/alpha. Install
+        # missing support without continually resetting their app-specific theme.
+        changed = False if target.exists() else save_changed(target, source.read_text(), apply)
         path = HOME/'.config/gtk-4.0/gtk.css'; text = path.read_text() if path.exists() else ''
         if 'nautilus-glass.css' not in text:
             changed = save_changed(path, '@import url("nautilus-glass.css");\n' + text, apply) or changed

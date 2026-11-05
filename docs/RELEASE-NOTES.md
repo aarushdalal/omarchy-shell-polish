@@ -1,4 +1,6 @@
-# Shell Polish 1.6.0 — Background-only desktop glass
+# Shell Polish 1.6.1 — Background-only desktop glass
+
+Patch safeguard: the automatic monitor preserves an existing Files glass CSS theme, including custom tint/alpha, and only installs its default recipe when missing.
 
 Native background transparency replaces whole-window fading: shared blur size 4 / two passes, foreground/window opacity 100%. Spotify uses the real desktop behind a 72% dark theme tint, without the embedded wallpaper canvas. Decorative gradients, opaque cinema backdrops and fullscreen navigation overlap are addressed while functional text masks stay opaque.
 
