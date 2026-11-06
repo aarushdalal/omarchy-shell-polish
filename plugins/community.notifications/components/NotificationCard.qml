@@ -78,16 +78,6 @@ BorderSurface {
     }
   }
 
-  // Subtle urgency accent line along the left edge
-  Rectangle {
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    width: 3
-    color: root.accentColor
-    opacity: 0.9
-  }
-
   HoverHandler { id: hoverTracker }
 
   MouseArea {
