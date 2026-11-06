@@ -38,7 +38,7 @@ import qs.Ui
 // popup if the user clicks a different bar icon).
 PanelWindow {
   id: root
-  property real surfaceOpacity: 0.94
+  property real surfaceOpacity: 0.68
 
   required property Item anchorItem
   required property QtObject bar
@@ -385,7 +385,7 @@ PanelWindow {
     y: root.cardOrigin.y + (root.open || root.popoutSwitching ? 0 : ((root.barPos === "bottom") ? -MotionAdapter.entryYOffset : MotionAdapter.entryYOffset))
     width: root.contentWidth
     height: root.contentHeight
-    color: Qt.rgba(OmarchyPalette.Color.background.r, OmarchyPalette.Color.background.g, OmarchyPalette.Color.background.b, root.surfaceOpacity)
+    color: Qt.rgba(0.0, 0.0, 0.0, root.surfaceOpacity)
     borderSpec: (root.borderSpec && root.borderSpec.type !== "none") ? root.borderSpec : Border.surfaceSpec("popups", "border", Theme.borderSubtle, 1)
     padding: root.padding
     radius: Theme.radiusLarge
