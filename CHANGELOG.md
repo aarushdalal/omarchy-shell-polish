@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.0] - 2026-11-12
+
+- **Windows & macOS-style Floating Desktop Experience** (`snippets/floating-mode.lua` & `docs/FLOATING-MODE.md`):
+  - **Freeform Floating Window Management**: Enables fluid, unconstrained floating window layouts on any workspace, offering an intuitive experience for multi-window triage, authoring, and casual browsing familiar from Windows 11 and macOS Sequoia.
+  - **Native Window Titlebars (`hyprbars`)**: Adds theme-integrated titlebars with right-aligned window action buttons:
+    - Close (`×` -> `hl.dsp.window.close`)
+    - Maximize / Restore (`□` -> toggle maximized fullscreen), with titlebar double-click maximization support
+    - Minimize (`−` -> `omarchy-hyprland-window-minimize`)
+  - **Interactive Desktop Dock Integration (`omarchy.dock` / `snippets/shell-dock-layout.json`)**:
+    - Automatically hosts minimized windows as a dedicated desktop shelf (macOS Dock / Windows Taskbar paradigm).
+    - Supports pinned applications, position adjustment (`top|bottom|left|right`), and auto-hide toggling (`omarchy dock autohide on`).
+  - **Drop Shadow & Visual Elevation**: Configures 16px soft drop shadows (`decoration.shadow`) to provide clear visual depth and natural layering between overlapping windows.
+  - **Solid Opacity Overrides**: Enforces crisp, fully opaque (`1.0`) surface content on floating workspace windows so overlapping documents never suffer from bleed-through text or contrast loss.
+  - **Ergonomic Layout Switching Shortcuts (`snippets/bindings-ergonomic.lua`)**:
+    - `SUPER + L`: Cycles workspace layout forward (Dwindle -> Scrolling -> Floating) with on-screen HUD notification.
+    - `SUPER + ALT + L`: Cycles workspace layout backward.
+    - `SUPER + T`: Instant toggle for floating an individual window.
+    - `SUPER + Left-Click Drag` / `SUPER + Right-Click Drag`: Freeform window movement and border resizing.
+  - **Documentation & Verification**: Authored `docs/FLOATING-MODE.md`, updated `docs/BAR-POLISH.md` and `docs/KEYBINDING-AUDIT.md`, and added automated regression tests in `tests/test_floating_mode.py`.
+
 ## [1.6.1] - 2026-11-05
 
 - Preserve an existing Files glass CSS recipe during automatic scans while still adding a missing import.

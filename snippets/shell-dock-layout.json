@@ -1,0 +1,17 @@
+// Omarchy Shell Polish: Interactive Desktop Dock Layout
+// Merge into ~/.config/omarchy/shell.json under the root object.
+// The dock appears on floating workspaces, hosting pinned apps and minimized windows.
+
+{
+  "dock": {
+    "position": "bottom",
+    "autohide": false,
+    "pinned": [
+      "org.gnome.Nautilus",
+      "google-chrome",
+      "foot",
+      "spotify",
+      "antigravity"
+    ]
+  }
+}

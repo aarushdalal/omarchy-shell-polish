@@ -2,6 +2,10 @@
 -- Merge into ~/.config/hypr/bindings.lua
 -- Inspect existing bindings first with `hyprctl binds` to verify no conflicts.
 
+-- Workspace Layout & Floating Desktop UX (Windows & macOS-style)
+hl.bind("SUPER", "L", "exec", "omarchy-hyprland-workspace-layout-toggle")
+hl.bind("SUPER ALT", "L", "exec", "omarchy-hyprland-workspace-layout-toggle back")
+
 -- Window Management
 hl.bind("SUPER", "T", "togglefloating")
 hl.bind("SUPER", "P", "pseudo")

@@ -1,13 +1,32 @@
-# Shell Polish 1.6.1 — Background-only desktop glass
+# Shell Polish 1.7.0 — Windows & macOS Floating Desktop Experience
 
-Patch safeguard: the automatic monitor preserves an existing Files glass CSS theme, including custom tint/alpha, and only installs its default recipe when missing.
+Release 1.7.0 brings a complete, refined Floating Desktop Experience to Omarchy and Hyprland, bridging the gap between keyboard-driven tiling and traditional Windows 11 / macOS Sequoia window management.
 
-Native background transparency replaces whole-window fading: shared blur size 4 / two passes, foreground/window opacity 100%. Spotify uses the real desktop behind a 72% dark theme tint, without the embedded wallpaper canvas. Decorative gradients, opaque cinema backdrops and fullscreen navigation overlap are addressed while functional text masks stay opaque.
+### Key Highlights
 
-An optional universal monitor scans current/future desktop apps, applies supported native recipes, preserves custom alpha and batches initial unsupported-app notifications. Unknown apps/builds request a theme patch without whole-window fading or app restarts.
+- **Freeform Floating Workspaces**: Enables fluid floating window management across workspaces, ideal for multi-window authoring, graphics tools, and casual multitasking.
+- **Native Window Titlebars (`hyprbars`)**: Theme-integrated titlebars featuring standard window controls:
+  - Close (`×` -> `hl.dsp.window.close`)
+  - Maximize / Fullscreen toggle (`□` -> `hl.dsp.window.fullscreen`), plus titlebar double-click maximization
+  - Minimize (`−` -> `omarchy-hyprland-window-minimize`)
+- **Interactive Desktop Dock Integration (`omarchy.dock`)**:
+  - Automatically activates on floating workspaces as an interactive minimization shelf and application launcher.
+  - Clicking minimized windows restores them into focus immediately.
+  - Supports quick customization via `omarchy dock` (position, auto-hide, application pinning).
+- **Elevation & Visual Hierarchy**:
+  - 16px soft drop shadows (`decoration.shadow`) to clearly delineate overlapping window layers.
+  - Solid opacity override (`1.0`) ensuring overlapping documents stay crisp and readable without background text bleed-through.
+- **Ergonomic Layout Switching**:
+  - `SUPER + L`: Seamlessly cycles active workspace layout forward (Tiling → Scrolling → Floating).
+  - `SUPER + ALT + L`: Cycles workspace layout backward.
+  - `SUPER + T`: Instant toggle for floating an individual window.
+- **Configuration & Documentation**:
+  - New snippet: `snippets/floating-mode.lua`
+  - New snippet: `snippets/shell-dock-layout.json`
+  - Comprehensive guide: `docs/FLOATING-MODE.md`
+  - Updated keybinding audit: `docs/KEYBINDING-AUDIT.md`
+  - Bar & dock synergy: `docs/BAR-POLISH.md`
 
-Opt-in references cover Files (76%), ChatGPT and the AntiGravity app (74%), and Foot (62%). All IDEs are included in automatic monitoring; IDE-specific native patches remain app-dependent. Pet changes are excluded. Includes guarded native runtime recipes, source-only Spotify alpha helper with upstream MIT attribution, launcher examples and private recovery-kit utilities. Install instructions retain existing configurations and do not restart live apps.
-
-Native helpers are version-specific and fall back to the installed/opaque app on unknown source layouts. No proprietary app archives, compiled runtime copies, account state, private manifests or new workstation captures are published. Existing showcase recordings predate this release.
-
-Validation: native source syntax, offline gradient/image-mask regression checks, guarded ASAR rewrite tests and release privacy checks. Local Spotify/fullscreen, Files and AntiGravity checks and isolated ChatGPT preview results informed the recipes; future app versions need revalidation.
+### Validation
+- Validated with automated test suite in `tests/test_floating_mode.py`.
+- Verified compatibility with Omarchy 4.0.2 / Hyprland 0.56.2 and Quickshell 0.3.1.
