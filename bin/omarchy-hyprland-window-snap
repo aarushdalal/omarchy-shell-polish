@@ -1,0 +1,169 @@
+#!/bin/bash
+
+# omarchy:summary=Snap active floating window to left, right, center, or toggle unsnap
+# omarchy:args=[left|right|center|unsnap|maximize]
+
+set -euo pipefail
+
+ACTION="${1:-center}"
+
+# Ensure we have an active window
+ACTIVE=$(hyprctl activewindow -j 2>/dev/null || true)
+[[ -n $ACTIVE && $ACTIVE != "null" ]] || exit 0
+
+ADDRESS=$(jq -r '.address // empty' <<<"$ACTIVE")
+[[ -n $ADDRESS ]] || exit 0
+
+WORKSPACE_ID=$(jq -r '.workspace.id // 1' <<<"$ACTIVE")
+
+# ISOLATION CHECK: Only allow snapping in floating layout!
+CURRENT_LAYOUT=$(omarchy-hyprland-workspace-layout-current "$WORKSPACE_ID" 2>/dev/null || echo "dwindle")
+if [[ "$CURRENT_LAYOUT" != "floating" ]]; then
+  # In dwindle or scrolling layouts, do not mess with window placement
+  exit 0
+fi
+
+# Ensure window is floating
+IS_FLOATING=$(jq -r '.floating' <<<"$ACTIVE")
+if [[ $IS_FLOATING != "true" ]]; then
+  hyprctl dispatch "hl.dsp.window.float({ action = \"on\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+  hyprctl dispatch "hl.dsp.window.tag({ tag = \"+omarchy-mode-floated\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+  hyprctl dispatch "hl.dsp.window.tag({ tag = \"+omarchy-floating-workspace\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+fi
+
+STATE_FILE="/tmp/omarchy-snap-${ADDRESS}.json"
+
+# Fetch active monitor info
+MONITOR_ID=$(jq -r '.monitor // 0' <<<"$ACTIVE")
+MON_INFO=$(hyprctl monitors -j 2>/dev/null | jq -r --argjson mid "$MONITOR_ID" 'first(.[] | select(.id == $mid)) // .[0]')
+
+SCALE=$(jq -r '.scale // 1.0' <<<"$MON_INFO")
+MON_W=$(jq -r '.width // 1920' <<<"$MON_INFO")
+MON_H=$(jq -r '.height // 1080' <<<"$MON_INFO")
+
+# Calculate logical dimensions
+LOG_W=$(awk -v w="$MON_W" -v s="$SCALE" 'BEGIN { printf "%.0f", w / s }')
+LOG_H=$(awk -v h="$MON_H" -v s="$SCALE" 'BEGIN { printf "%.0f", h / s }')
+
+RESERVED_TOP=$(jq -r '.reserved[1] // 0' <<<"$MON_INFO")
+RESERVED_BOTTOM=$(jq -r '.reserved[3] // 0' <<<"$MON_INFO")
+RESERVED_LEFT=$(jq -r '.reserved[0] // 0' <<<"$MON_INFO")
+RESERVED_RIGHT=$(jq -r '.reserved[2] // 0' <<<"$MON_INFO")
+
+GAP=10
+USABLE_W=$(( LOG_W - RESERVED_LEFT - RESERVED_RIGHT ))
+USABLE_H=$(( LOG_H - RESERVED_TOP - RESERVED_BOTTOM ))
+
+# Current geometry
+CUR_X=$(jq -r '.at[0] // 0' <<<"$ACTIVE")
+CUR_Y=$(jq -r '.at[1] // 0' <<<"$ACTIVE")
+CUR_W=$(jq -r '.size[0] // 800' <<<"$ACTIVE")
+CUR_H=$(jq -r '.size[1] // 600' <<<"$ACTIVE")
+
+# Helper to unsnap back to previous geometry
+unsnap_to_previous() {
+  local target_x="" target_y="" target_w="" target_h=""
+  if [[ -f "$STATE_FILE" ]]; then
+    target_x=$(jq -r '.x // empty' "$STATE_FILE")
+    target_y=$(jq -r '.y // empty' "$STATE_FILE")
+    target_w=$(jq -r '.w // empty' "$STATE_FILE")
+    target_h=$(jq -r '.h // empty' "$STATE_FILE")
+    rm -f "$STATE_FILE"
+  fi
+
+  if [[ -z $target_w || $target_w -le 100 || -z $target_h || $target_h -le 100 ]]; then
+    # Fallback default comfortable centered floating size
+    target_w=$(( USABLE_W * 64 / 100 ))
+    target_h=$(( USABLE_H * 68 / 100 ))
+    target_x=$(( RESERVED_LEFT + (USABLE_W - target_w) / 2 ))
+    target_y=$(( RESERVED_TOP + (USABLE_H - target_h) / 2 ))
+  fi
+
+  hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"maximized\", action = \"unset\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.resize({ x = $target_w, y = $target_h, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+  hyprctl dispatch "hl.dsp.window.move({ x = $target_x, y = $target_y, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+}
+
+save_state_if_needed() {
+  local state="$1"
+  # Only save if we are not already in a snapped state
+  if [[ ! -f "$STATE_FILE" ]]; then
+    jq -n \
+      --arg state "$state" \
+      --argjson x "$CUR_X" \
+      --argjson y "$CUR_Y" \
+      --argjson w "$CUR_W" \
+      --argjson h "$CUR_H" \
+      '{state: $state, x: $x, y: $y, w: $w, h: $h}' >"$STATE_FILE"
+  fi
+}
+
+case "$ACTION" in
+  left)
+    # Check if already snapped
+    if [[ -f "$STATE_FILE" ]]; then
+      PREV_STATE=$(jq -r '.state // empty' "$STATE_FILE")
+      if [[ "$PREV_STATE" == "left" ]]; then
+        # Already snapped left: UNSNAP!
+        unsnap_to_previous
+        exit 0
+      fi
+    fi
+
+    save_state_if_needed "left"
+    # Update state to left
+    if [[ -f "$STATE_FILE" ]]; then
+      TMP=$(mktemp)
+      jq '.state = "left"' "$STATE_FILE" >"$TMP" && mv "$TMP" "$STATE_FILE"
+    fi
+
+    TARGET_W=$(( (USABLE_W - 3 * GAP) / 2 ))
+    TARGET_H=$(( USABLE_H - 2 * GAP ))
+    TARGET_X=$(( RESERVED_LEFT + GAP ))
+    TARGET_Y=$(( RESERVED_TOP + GAP ))
+
+    hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"maximized\", action = \"unset\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1 || true
+    hyprctl dispatch "hl.dsp.window.resize({ x = $TARGET_W, y = $TARGET_H, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+    hyprctl dispatch "hl.dsp.window.move({ x = $TARGET_X, y = $TARGET_Y, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+    ;;
+
+  right)
+    # Check if already snapped
+    if [[ -f "$STATE_FILE" ]]; then
+      PREV_STATE=$(jq -r '.state // empty' "$STATE_FILE")
+      if [[ "$PREV_STATE" == "right" ]]; then
+        # Already snapped right: UNSNAP!
+        unsnap_to_previous
+        exit 0
+      fi
+    fi
+
+    save_state_if_needed "right"
+    if [[ -f "$STATE_FILE" ]]; then
+      TMP=$(mktemp)
+      jq '.state = "right"' "$STATE_FILE" >"$TMP" && mv "$TMP" "$STATE_FILE"
+    fi
+
+    TARGET_W=$(( (USABLE_W - 3 * GAP) / 2 ))
+    TARGET_H=$(( USABLE_H - 2 * GAP ))
+    TARGET_X=$(( RESERVED_LEFT + TARGET_W + 2 * GAP ))
+    TARGET_Y=$(( RESERVED_TOP + GAP ))
+
+    hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"maximized\", action = \"unset\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1 || true
+    hyprctl dispatch "hl.dsp.window.resize({ x = $TARGET_W, y = $TARGET_H, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+    hyprctl dispatch "hl.dsp.window.move({ x = $TARGET_X, y = $TARGET_Y, relative = false, window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+    ;;
+
+  center|unsnap)
+    unsnap_to_previous
+    ;;
+
+  maximize|toggle-maximize)
+    hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"maximized\", action = \"toggle\", window = \"address:$ADDRESS\" })" >/dev/null 2>&1
+    ;;
+
+  *)
+    echo "Usage: omarchy-hyprland-window-snap [left|right|center|unsnap|maximize]" >&2
+    exit 1
+    ;;
+esac

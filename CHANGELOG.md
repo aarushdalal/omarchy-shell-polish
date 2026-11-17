@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.8.0] - 2026-11-17
+
+- **Pixel Minimized Bubble Plugin (`community.floating-bubble`)**:
+  - Adds a Google Pixel / Material 3 circular floating bubble in the bottom-right corner.
+  - Strictly application icons only (zero text clutter), adapting dynamically to system scale and theme tokens.
+  - Smooth horizontal expansion on hover with spring physics (`Easing.OutBack`).
+  - Single-click restore, middle/double-click restore & maximize, right-click restore all.
+  - **Maximized Window Guard**: Automatically hides when any window on the active workspace is maximized or fullscreen, ensuring zero overlap with active work.
+  - **Multi-Workspace Isolation**: Remembers which workspace each window was minimized from. Each workspace maintains its own isolated bubble, allowing smooth multitasking between floating and tiling desktops without losing minimized windows across workspace switches.
+- **macOS Traffic Light Titlebars (`hyprbars` / `snippets/floating-mode.lua`)**:
+  - Left-aligned traffic light dots: Red (`🔴 Close`), Yellow (`🟡 Minimize`), and Green (`🟢 Maximize/Restore`).
+  - Circular rounding (`button_rounding = 12`) and glyphs displayed on mouse hover (`icon_on_hover = true`).
+  - Double-clicking the titlebar toggles maximized state.
+- **Native Border & Diagonal Corner Resizing**:
+  - Edge and corner grab areas enabled via `resize_on_border = true` and `extend_border_grab_area = 18`.
+  - Comprehensive keyboard resizing shortcuts (<kbd>SUPER</kbd> + <kbd>CTRL</kbd> + Arrows for width/height, <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + `+`/`-` for diagonal whole size).
+- **Smart Window Snapping & Unsnapping (`omarchy-hyprland-window-snap` & `snippets/bindings-ergonomic.lua`)**:
+  - Half-screen snap left/right (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Left</kbd>/<kbd>Right</kbd>), center (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Down</kbd>), and maximize (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Up</kbd>).
+  - Geometry memory toggles back to previous floating size when repeating the same shortcut.
+  - Strict layout isolation: snapping commands safely no-op in dwindle or scrolling workspaces.
+- **Dedicated CLI Tools (`bin/`)**:
+  - `omarchy-hyprland-window-restore`: Restores individual, latest, or all minimized windows with per-workspace targeting.
+  - `omarchy-hyprland-window-minimize`: Minimizes floating windows to `special:minimized` and tags them with originating workspace metadata.
+  - `omarchy-hyprland-window-snap`: Snaps and unsnaps floating windows with geometry caching.
+
 ## [1.7.0] - 2026-11-12
 
 - **Windows & macOS-style Floating Desktop Experience** (`snippets/floating-mode.lua` & `docs/FLOATING-MODE.md`):
@@ -48,67 +73,3 @@
   - **Systemd User Service & Management CLI**: Deploys `daemon-spotify-sync.service` and `daemon-spotify-sync` CLI for one-command status checks, live triggers, and logs.
 
 ## [1.4.0] - 2026-11-02
-
-- Unify user-owned popup materials at restrained dark glass and simplify menu presentation without removing routes or controls.
-- Add Caelestia SearchBar material/focus refinement and hidden/reduced-motion ripple guards.
-- Add an optional Modern Lock view with a compact date, read-only CPU/RAM/battery line, masked password input and finite motion. Authentication remains in the existing host.
-- Include opt-in shared Hyprland and semantic shell material references; preserve existing configuration when merging. No installer changes to authentication or power policy.
-
-## [1.3.1] - 2026-11-01
-
-- Show per-item loading and unavailable states in the Theme Deck while retaining valid same-item thumbnails.
-- Preserve existing card motion, sound, favorites, search, peek and explicit Apply; correct preview diagnostics.
-- Add exact-source hidden Wayland compilation and isolated Qt image/selection/export regression checks. No real desktop theme is applied by these tests.
-
-## 1.3.0 — 2026-10-31
-
-- **Interactive 3D Motion, Harmony Swatches & Favoriting Suite** (`plugins/community.image-picker`):
-  - **Dynamic 3D Parallax Tilt & Moving Sheen**: Hero card tracks cursor motion with real-time 3D $X$/$Y$ perspective tilt and a moving specular glass sheen reflecting across the active card surface.
-  - **Dynamic Theme Color Harmony Swatches**: Displays live color palette dots (accent, background, foreground) extracted directly from theme metadata in a frosted pill on the hero card.
-  - **Theme Favoriting & Star Pinning**: Clickable star icon (`★`/`☆`) and `Ctrl+S` shortcut with persistent storage in `~/.local/state/omarchy/favorite-themes.json`.
-  - **Favorites-Only Deck Filter**: Top HUD toggle button (`★ Favorites (N)`) that filters the entire Arc Deck to show only starred themes with responsive count badges.
-  - **Surprise Me / Roulette Shuffle**: Interactive shuffle button (`󰒝`) in top HUD and `Ctrl+R` shortcut to quickly discover and animate to a random theme.
-  - **Clean Fullscreen Wallpaper Peeking**: Fullscreen button (`󰍹`) or `Space` key that cleanly fades all UI chrome and expands the master wallpaper into an immersive full-screen view.
-  - **Acoustic Mechanical Audio Feedback**: Optional tactile tick on card flips, scrubbing, and toggles powered by `canberra-gtk-play`, toggleable with `Ctrl+M` or the top HUD sound button.
-  - **Smooth Touchpad & Mouse Wheel Scrolling**: Integrated Qt 6 `WheelHandler` enabling smooth two-finger touchpad swipes and mouse wheel scrubbing across the deck.
-  - **Ergonomic Shortcuts HUD**: Updated bottom dock with crystal-clear shortcut indicators (`◄ ► Deck`, `Enter Apply`, `Space Peek`, `Ctrl+R Shuffle`, `Ctrl+S Star`, `Ctrl+M Sound`, `Esc Close`).
-
-## 1.2.0 — 2026-10-31
-
-- **Prismatic 3D Arc Deck Theme & Wallpaper Selector** (`plugins/community.image-picker`):
-  - **Prismatic 3D Amphitheater Arc Deck**: Replaced static carousel with an amphitheater card deck where flanking cards sweep outward and downward in an elegant crescent arc, keeping the hero card commanding and unblocked at the top.
-  - **Hardware-Accelerated Anti-Aliased Masking**: Applied GPU `MultiEffect` alpha masks (`radius: 24`) to eliminate sharp image corner protrusion, guaranteeing silky-smooth curved borders on all cards without blank texture drops.
-  - **Ultra-Fast Progressive 4K Rendering**: Dual-tier rendering decoupling instant fast-decode thumbnails (< 1ms per card) from crisp full-resolution 4K/1080p master wallpapers on the active hero card with smooth asynchronous fade-in.
-  - **Ambient Atmospheric Horizon**: Dynamic wallpaper backdrop aura that blooms across the desktop matching the active artwork with obsidian vignette shading.
-  - **Tactile Deck Scrubber & Glass HUDs**: Interactive timeline scrubber with click-to-seek, floating frosted header with group badges and instant search, and integrated hero controls with `Apply Theme` action button.
-  - **Ergonomic Controls**: Arrow keys (`◄ ►`), `PgUp`/`PgDn` (jump ±5 cards), `Home`/`End`, mouse click-to-center on flanking cards, and `Escape` to clear search or close.
-- **Installer Integration** (`tools/install_refinement.py`):
-  - Automatically deploys and enables `community.image-picker` with executable permissions preserved.
-
-## 1.1.1 — 2026-10-12
-
-- Restore DaemonOS icon-only sizing; tracked session actions and visible failure handling on both desktops.
-- Preserve running actions across drawer closure; explicit confirmation and force controls.
-- Faster, transparent, local tech animation with theme tint and reduced-motion/visibility gating.
-
-
-## [1.1.0] - 2026-10-11
-
-- User-owned native Omarchy control/menu clones and Session widget; DaemonOS preset-aware drawers, readiness-aware loader and confirmed session actions; exact-file rollback installer.
-- Clean current release files and retire workstation captures. Existing public history is preserved. Future commits use a GitHub noreply address; CI checks current release payloads.
-- See docs/RELEASE-PRIVACY.md for scope and limitations. Sample artwork illustrates the design, rather than proving a live runtime result.
-
-All notable changes to `omarchy-shell-polish` will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [1.0.0] - 2026-09-08
-
-### Added
-- Initial clean public release for Omarchy 4.0.2 / Arch Linux.
-- Frosted glass blur and shadow settings (`snippets/looknfeel-glass.lua`).
-- Floating bar and center anchor layout (`snippets/shell-bar-layout.json`).
-- Ergonomic keybinding remappings and conflict audit (`snippets/bindings-ergonomic.lua`).
-- Comprehensive safe user installer script (`install.sh`) supporting `--dry-run`.
-- Full security exclusions, sanitized configurations, and complete documentation.

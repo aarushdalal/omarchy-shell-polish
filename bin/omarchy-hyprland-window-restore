@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# omarchy:summary=Restore minimized windows from the special:minimized workspace
+# omarchy:args=[--latest | --all [workspace] | --list | <window-address> [workspace]]
+
+set -euo pipefail
+
+MINIMIZED_WORKSPACE="special:minimized"
+
+# Helper to query all clients in json
+get_clients() {
+  hyprctl clients -j 2>/dev/null || echo "[]"
+}
+
+# Helper to get active workspace id
+get_active_workspace() {
+  hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // 1'
+}
+
+list_minimized() {
+  local clients
+  clients=$(get_clients)
+  jq -c --arg ws "$MINIMIZED_WORKSPACE" '
+    [ .[] | select(.workspace.name == $ws) | {
+        address: .address,
+        title: .title,
+        class: .class,
+        initialClass: .initialClass,
+        tags: (.tags // []),
+        fromWorkspace: (
+          [ (.tags // [])[] | capture("omarchy-minimized-from-(?<id>[0-9]+)") | .id | tonumber ] | first // null
+        )
+      }
+    ]
+  ' <<<"$clients"
+}
+
+restore_window() {
+  local address="$1"
+  local target_ws="${2:-}"
+
+  [[ -n $address ]] || return 1
+  [[ $address =~ ^0x ]] || address="0x$address"
+
+  local clients
+  clients=$(get_clients)
+  
+  # Verify window exists in special:minimized
+  local win
+  win=$(jq -r --arg addr "$address" --arg ws "$MINIMIZED_WORKSPACE" '
+    first(.[] | select(.address == $addr and .workspace.name == $ws)) // empty
+  ' <<<"$clients")
+
+  if [[ -z $win ]]; then
+    # Maybe it was already restored or address format mismatch
+    win=$(jq -r --arg addr "$address" 'first(.[] | select(.address == $addr)) // empty' <<<"$clients")
+    if [[ -n $win ]]; then
+      # Focus and raise it
+      hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 || true
+      hyprctl dispatch "hl.dsp.window.alter_zorder({ mode = \"top\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+      return 0
+    fi
+    echo "Window $address not found or not minimized" >&2
+    return 1
+  fi
+
+  if [[ -z $target_ws ]]; then
+    # Check if window had an omarchy-minimized-from-<id> tag
+    local from_ws
+    from_ws=$(jq -r '
+      [ (.tags // [])[] | capture("omarchy-minimized-from-(?<id>[0-9]+)") | .id ] | first // empty
+    ' <<<"$win")
+
+    local active_ws
+    active_ws=$(get_active_workspace)
+
+    if [[ -n $from_ws ]]; then
+      target_ws="$from_ws"
+    else
+      target_ws="$active_ws"
+    fi
+  fi
+
+  # Clean up the minimized tag
+  local tag
+  while read -r tag; do
+    [[ -n $tag ]] || continue
+    hyprctl dispatch "hl.dsp.window.tag({ tag = \"-$tag\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+  done < <(jq -r '(.tags // [])[] | select(test("omarchy-minimized-from-[0-9]+"))' <<<"$win")
+
+  # Move window to target workspace smoothly
+  # Temporary disable animation during the move to avoid jarring glitches
+  hyprctl dispatch "hl.dsp.window.set_prop({ prop = \"no_anim\", value = \"1\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.move({ workspace = \"$target_ws\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+  
+  # Focus and bring to top
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.alter_zorder({ mode = \"top\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+
+  # Re-enable animation after a brief delay in background
+  (
+    sleep 0.3
+    hyprctl dispatch "hl.dsp.window.set_prop({ prop = \"no_anim\", value = \"unset\", window = \"address:$address\" })" >/dev/null 2>&1 || true
+  ) &
+}
+
+restore_latest() {
+  local active_ws
+  active_ws=$(get_active_workspace)
+
+  local clients
+  clients=$(get_clients)
+
+  # Prioritize window minimized from this workspace
+  local target_addr
+  target_addr=$(jq -r --arg ws "$MINIMIZED_WORKSPACE" --arg from_tag "omarchy-minimized-from-$active_ws" '
+    [ .[] | select(.workspace.name == $ws and ((.tags // []) | any(test($from_tag)))) ] | last | .address // empty
+  ' <<<"$clients")
+
+  if [[ -z $target_addr ]]; then
+    # Fallback to any minimized window
+    target_addr=$(jq -r --arg ws "$MINIMIZED_WORKSPACE" '
+      [ .[] | select(.workspace.name == $ws) ] | last | .address // empty
+    ' <<<"$clients")
+  fi
+
+  if [[ -n $target_addr ]]; then
+    restore_window "$target_addr" "$active_ws"
+  else
+    echo "No minimized windows found to restore" >&2
+    exit 0
+  fi
+}
+
+restore_all() {
+  local target_ws="${1:-$(get_active_workspace)}"
+  local clients
+  clients=$(get_clients)
+
+  local addrs
+  if [[ -n ${1:-} ]]; then
+    mapfile -t addrs < <(jq -r --arg ws "$MINIMIZED_WORKSPACE" --arg from_tag "omarchy-minimized-from-$target_ws" '
+      .[] | select(.workspace.name == $ws and ((.tags // []) | any(test($from_tag)))) | .address
+    ' <<<"$clients")
+  else
+    mapfile -t addrs < <(jq -r --arg ws "$MINIMIZED_WORKSPACE" '.[] | select(.workspace.name == $ws) | .address' <<<"$clients")
+  fi
+
+  if (( ${#addrs[@]} == 0 )); then
+    echo "No minimized windows to restore" >&2
+    return 0
+  fi
+
+  for addr in "${addrs[@]}"; do
+    restore_window "$addr" "$target_ws"
+  done
+}
+
+case "${1:-}" in
+  --list)
+    list_minimized
+    ;;
+  --latest|"")
+    restore_latest
+    ;;
+  --all)
+    restore_all "${2:-}"
+    ;;
+  -h|--help)
+    echo "Usage: omarchy-hyprland-window-restore [--latest | --all [ws] | --list | <window-address> [ws]]"
+    ;;
+  *)
+    restore_window "$1" "${2:-$(get_active_workspace)}"
+    ;;
+esac

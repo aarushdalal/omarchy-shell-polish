@@ -1,6 +1,6 @@
 # Floating Desktop Mode (Windows & macOS Experience on Omarchy)
 
-> **Unofficial / Community Refinement**: A complete guide and drop-in configuration for enabling the traditional floating desktop window management experience on Omarchy and Hyprland.
+> **Community Refinement**: A complete guide and drop-in configuration for enabling the traditional floating desktop window management experience on Omarchy and Hyprland, featuring macOS traffic light controls, Google Pixel / Material 3 minimized floating bubbles, native mouse/keyboard window resizing, smart snapping with unsnap memory, and multi-workspace multitasking isolation.
 
 ---
 
@@ -10,8 +10,11 @@ While Omarchy defaults to auto-tiling (Dwindle) and horizontal panning (Scrollin
 
 In Floating Mode:
 - **Freeform Windows**: Windows float freely, overlap naturally, and can be moved and resized with familiar mouse or keyboard gestures.
-- **Native Titlebars (`hyprbars`)**: Every window gains a native titlebar with theme-matched accents and standard window controls: **Close (`×`)**, **Maximize/Restore (`□`)**, and **Minimize (`−`)**.
-- **Interactive Desktop Dock (`omarchy.dock`)**: Minimized windows tuck into the bottom dock (macOS Dock / Windows Taskbar style), restoring instantly when clicked.
+- **macOS Traffic Light Titlebars (`hyprbars`)**: Every window gains native circular traffic light controls on the top-left: **Close (`🔴 ×`)**, **Minimize (`🟡 −`)**, and **Maximize/Restore (`🟢 ＋`)**.
+- **Pixel / Material 3 Minimized Bubble (`community.floating-bubble`)**: Minimized windows tuck into an adaptive floating bubble in the bottom-right corner. It displays strictly application icons (no text), expands horizontally on hover, and **never obscures a maximized or fullscreen window**.
+- **Multi-Workspace Isolation**: Each workspace remembers its own minimized windows with its own bubble. Switching workspaces keeps minimized windows cleanly isolated per desktop, allowing seamless multitasking between floating and tiling workspaces.
+- **Native Border & Corner Resizing**: Smooth mouse resizing from any window edge or corner, plus fine-grained keyboard resizing shortcuts.
+- **Smart Window Snapping & Unsnapping**: Snap windows to the left or right half, center, or toggle-unsnap back to previous floating coordinates.
 - **Elevation & Shadows**: Balanced drop shadows provide depth perception between overlapping windows.
 - **Solid Opacity**: Floating windows enforce opaque surface content so background text never creates distracting bleed-through.
 
@@ -21,107 +24,113 @@ In Floating Mode:
 
 | Feature | Tiling (Dwindle) | Scrolling (PaperWM) | Floating Mode (Windows/macOS) |
 |---|---|---|---|
-| **Window Arrangement** | Automatic grid partition | Infinite horizontal strip | Freeform floating canvas & overlap |
-| **Window Controls** | Keyboard shortcuts | Keyboard / column swipe | Titlebar buttons: Close, Maximize, Minimize |
-| **Double-Click Titlebar** | N/A | Focus column | Toggle maximized fullscreen |
-| **Minimization Shelf** | Scratchpad (`SUPER + S`) | Column collapse | Bottom interactive Dock (`omarchy.dock`) |
-| **Window Snapping** | Automatic | Automatic | Manual drag & drop / edge snap |
-| **Best For** | Code editing, CLI splits | Linear reader, wide sheets | Office apps, media, multi-window triage |
+| **Window Arrangement** | Automatic grid partition | Infinite horizontal strip | Freeform floating canvas & natural overlap |
+| **Window Controls** | Keyboard shortcuts | Keyboard / column swipe | macOS Traffic Light dots: 🔴 Close, 🟡 Minimize, 🟢 Maximize |
+| **Minimization Shelf** | Scratchpad (`SUPER + S`) | Column collapse | Google Pixel / Material 3 Floating Bubble |
+| **Multi-Workspace Memory** | Single workspace scratchpad | Single workspace stack | **Per-workspace isolated bubbles & state** |
+| **Window Resizing** | Partition splits | Column width adjustments | Edge/corner mouse dragging & keyboard resize |
+| **Window Snapping** | Automatic | Automatic | Edge snap with **toggle-unsnap memory** |
+| **Layout Isolation** | Tiled | Strip | Clean transitions without stranded windows |
+| **Best For** | Code editing, CLI splits | Linear reading, wide sheets | Office apps, media, multi-window triage, casual use |
 
 ---
 
 ## Core Components
 
-### 1. Native Titlebars (`hyprbars`)
+### 1. macOS Traffic Light Titlebars (`hyprbars`)
 
-When a workspace enters floating mode, Hyprland dynamically enables the `hyprbars` plugin:
-- **Titlebar Height**: 30px with theme-adaptive background (`colors.lighter_background` / `selection`) and foreground text.
-- **Controls Alignment**: Top-right corner matching standard desktop conventions:
-  - **`×` (Close)**: Dispatches `hl.dsp.window.close()`.
-  - **`□` (Maximize / Restore)**: Dispatches `hl.dsp.window.fullscreen(mode="maximized")`.
-  - **`−` (Minimize to Dock)**: Dispatches `omarchy-hyprland-window-minimize %WINDOW%`.
-- **Double-Click**: Double-clicking the titlebar maximizes the window to fill the workspace, or restores it to its previous floating geometry.
+When a workspace enters floating mode, Hyprland dynamically enables the `hyprbars` plugin with macOS aesthetic styling:
+- **Left-Aligned Controls**: Three circular traffic-light control dots positioned on the top-left:
+  - **🔴 Red (`×`)**: Closes the window (`hl.dsp.window.close()`).
+  - **🟡 Yellow (`−`)**: Minimizes the window to the Pixel floating bubble (`omarchy-hyprland-window-minimize %WINDOW%`).
+  - **🟢 Green (`＋`)**: Toggles window maximization (`hl.dsp.window.fullscreen(mode="maximized")`).
+- **Interactive Hover Dots**: The control dots display symbol glyphs on mouse hover (`icon_on_hover = true`) and remain clean solid circles at rest.
+- **Double-Click Titlebar**: Double-clicking the titlebar maximizes the window to fill the workspace, or restores it to its previous floating geometry.
 
-### 2. Desktop Dock (`omarchy.dock`)
+### 2. Google Pixel Minimized Bubble (`community.floating-bubble`)
 
-The interactive dock automatically appears on floating workspaces:
-- Serves as the **minimization shelf**: Clicking any minimized window thumbnail or icon brings it back into focus.
-- Hosts **pinned applications** for one-click launching.
-- Configurable via the `omarchy dock` CLI:
-  ```bash
-  # Check or change dock position
-  omarchy dock position bottom    # options: top | bottom | left | right
+A Material 3 / Pixel-inspired floating bubble located in the bottom-right corner:
+- **Strictly Icons Only**: No text labels or titles—clean, modern, unobtrusive application icons.
+- **Horizontal Hover Expansion**: Expands smoothly from a single circular badge into an interactive horizontal tray on hover using spring physics (`Easing.OutBack`).
+- **System Adaptive**: Scales its dimensions (`bubbleSize`, `iconSize`, `radius`, `margin`) dynamically using the active Omarchy `Style.fontScale` and color scheme.
+- **Maximized Window Guard**: Automatically hides whenever any window on the active workspace is maximized or fullscreen, ensuring zero overlap with your active content.
+- **Per-Workspace Isolation**: Remembers which workspace each window was minimized from. Switching to another workspace only shows windows minimized from that specific workspace, keeping multiple workspaces organized and conflict-free.
+- **Interactive Gestures**:
+  - **Left-Click Slot**: Restores the window to the current workspace and focuses it.
+  - **Middle-Click / Double-Click Slot**: Restores and immediately maximizes the window.
+  - **Right-Click Bubble**: Restores all minimized windows belonging to the current workspace.
 
-  # Toggle or enable auto-hide
-  omarchy dock autohide on        # options: on | off | toggle
+### 3. Mouse Edge & Corner Resizing
 
-  # Pin or unpin applications
-  omarchy dock pin org.gnome.Nautilus
-  omarchy dock unpin org.gnome.Nautilus
+Native window edge and corner grab areas eliminate clumsy resizing:
+- **`resize_on_border = true`**: Hovering near any border or corner switches the cursor to the appropriate resize arrow.
+- **`extend_border_grab_area = 18`**: Generous 18px grab zone makes grabbing edges and diagonal corners effortless on high-resolution displays.
+- **Corner Resizing**: Dragging any corner resizes width and height simultaneously.
 
-  # List pinned applications
-  omarchy dock pinned
-  ```
+### 4. Smart Window Snapping & Unsnapping
 
-### 3. Visual Depth & Opacity Rules
-
-Overlapping floating windows require visual separation to avoid cognitive fatigue:
-- **Drop Shadows**: Configured with a 16px soft spread (`render_power = 3`, `rgba(0,0,0,0.21)`).
-- **Opaque Surface Override**: Unlike tiled windows which may use subtle frosted transparency, floating workspace windows are forced to `1.0` active opacity so overlapping documents remain completely legible.
+CLI and keybinding engine (`omarchy-hyprland-window-snap`):
+- **Half-Screen Snap**: Snap left (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Left</kbd>) or right (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Right</kbd>).
+- **Toggle Unsnap Memory**: Snapping a window remembers its pre-snap geometry in `/tmp/omarchy-snap-<address>.json`. Pressing the same snap shortcut again or centering (<kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Down</kbd>) restores the exact pre-snap dimensions and position.
+- **Layout Isolation**: Snapping commands verify that the current workspace is in floating mode; if in tiling or scrolling mode, snapping safely exits to avoid corrupting layout trees.
 
 ---
 
 ## Keybindings & Shortcuts
 
-| Shortcut | Description | Action |
-|---|---|---|
-| `SUPER + L` | **Cycle Layout Forward** | Dwindle → Scrolling → **Floating** |
-| `SUPER + ALT + L` | **Cycle Layout Backward** | Floating → Scrolling → Dwindle |
-| `SUPER + T` | **Toggle Window Float** | Float/tile current window only |
-| `SUPER + Left-Click Drag` | **Move Window** | Drag floating window freely |
-| `SUPER + Right-Click Drag` | **Resize Window** | Resize floating window from any edge |
-| `Double-Click Titlebar` | **Maximize / Restore** | Toggle window maximized state |
+| Shortcut | Category | Description | Action |
+|---|---|---|---|
+| <kbd>SUPER</kbd> + <kbd>L</kbd> | Layout | **Cycle Layout Forward** | Dwindle → Scrolling → **Floating** |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>L</kbd> | Layout | **Cycle Layout Backward** | Floating → Scrolling → Dwindle |
+| <kbd>SUPER</kbd> + <kbd>T</kbd> | Window | **Toggle Window Float** | Float or tile current window only |
+| <kbd>SUPER</kbd> + <kbd>Left-Click Drag</kbd> | Mouse | **Move Window** | Drag floating window freely |
+| <kbd>SUPER</kbd> + <kbd>Right-Click Drag</kbd> | Mouse | **Resize Window** | Freeform resize from any window edge |
+| <kbd>Border / Corner Drag</kbd> | Mouse | **Native Edge Resize** | Resize width, height, or diagonal corner |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd> / <kbd>Right</kbd> | Resize | **Adjust Width** | Decrease / increase window width |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>Up</kbd> / <kbd>Down</kbd> | Resize | **Adjust Height** | Decrease / increase window height |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>=</kbd> / <kbd>-</kbd> | Resize | **Diagonal Whole Size** | Scale window proportionally up / down |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Left</kbd> | Snapping | **Snap Left / Unsnap** | Snap to left half; toggle restores original size |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Right</kbd> | Snapping | **Snap Right / Unsnap** | Snap to right half; toggle restores original size |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Down</kbd> | Snapping | **Center / Unsnap** | Center window or restore pre-snap geometry |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Up</kbd> | Snapping | **Maximize Window** | Toggle maximized state |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>M</kbd> | Minimization | **Restore Latest Window** | Unminimize latest window onto current workspace |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>M</kbd> | Minimization | **Restore All Windows** | Unminimize all windows for current workspace |
 
 ---
 
-## Manual Installation & Usage
+## Installation & Setup
 
-### Step 1: Add Ergonomic Keybindings
-Merge the bindings from [`snippets/bindings-ergonomic.lua`](../snippets/bindings-ergonomic.lua) into `~/.config/hypr/bindings.lua`:
-```lua
-hl.bind("SUPER", "L", "exec", "omarchy-hyprland-workspace-layout-toggle")
-hl.bind("SUPER ALT", "L", "exec", "omarchy-hyprland-workspace-layout-toggle back")
-hl.bind("SUPER", "T", "togglefloating")
-```
-Reload Hyprland:
+### Step 1: Install Plugin & Binaries
+Copy the floating bubble plugin and helper scripts into your configuration:
 ```bash
-hyprctl reload
+# Register floating bubble plugin in ~/.config/omarchy/plugins
+mkdir -p ~/.config/omarchy/plugins/daemon0.floating-bubble
+cp plugins/community.floating-bubble/* ~/.config/omarchy/plugins/daemon0.floating-bubble/
+
+# Install helper binaries to ~/.local/bin
+mkdir -p ~/.local/bin
+cp bin/* ~/.local/bin/
+chmod +x ~/.local/bin/omarchy-hyprland-window-*
 ```
 
-### Step 2: Configure Floating Snippet
-Merge [`snippets/floating-mode.lua`](../snippets/floating-mode.lua) into `~/.config/hypr/looknfeel.lua` or `~/.config/hypr/hyprland.lua`.
-
-### Step 3: Configure Dock in Quickshell
-Optionally configure your dock preferences in `~/.config/omarchy/shell.json` using [`snippets/shell-dock-layout.json`](../snippets/shell-dock-layout.json):
+### Step 2: Register in `shell.json`
+Add the plugin ID to your `~/.config/omarchy/shell.json` plugins list:
 ```json
 {
-  "dock": {
-    "position": "bottom",
-    "autohide": false,
-    "pinned": [
-      "org.gnome.Nautilus",
-      "google-chrome",
-      "foot",
-      "spotify",
-      "antigravity"
-    ]
-  }
+  "plugins": [
+    "daemon0.floating-bubble"
+  ]
 }
 ```
-Restart the shell to apply:
+
+### Step 3: Add Ergonomic Keybindings & Look'n'Feel
+Merge [`snippets/bindings-ergonomic.lua`](../snippets/bindings-ergonomic.lua) into `~/.config/hypr/bindings.lua` and [`snippets/floating-mode.lua`](../snippets/floating-mode.lua) into `~/.config/hypr/looknfeel.lua`.
+
+Reload Hyprland and Quickshell:
 ```bash
+hyprctl reload
 omarchy-restart-shell
 ```
 
-### Step 4: Toggle & Enjoy
-Press **`SUPER + L`** on any workspace until the on-screen HUD displays **Floating Layout**. Your windows now feature draggable titlebars, close/maximize/minimize buttons, and an interactive dock at the bottom!
+### Step 4: Toggle & Multitask
+Press **`SUPER + L`** to cycle into **Floating Layout**. Minimize any window using the yellow traffic light dot or shortcut; the Pixel bubble will appear in the bottom-right corner. Switch workspaces (<kbd>SUPER</kbd> + <kbd>1</kbd>, <kbd>2</kbd>, etc.) to experience clean, isolated multitasking across floating and tiling desktops!

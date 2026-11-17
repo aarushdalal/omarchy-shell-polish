@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "community.floating-bubble",
+  "name": "Floating Minimized Bubble",
+  "version": "1.8.0",
+  "author": "Omarchy Community",
+  "description": "Pixel & Material 3 styled floating minimized app bubble with horizontal hover expansion, per-workspace isolation, and maximized window collision avoidance",
+  "kinds": [
+    "service"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}

@@ -1,8 +1,10 @@
 # Omarchy Shell Polish (`omarchy-shell-polish`)
 
-> **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, and ergonomic keybinding polish.
+> **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, Pixel floating bubble, macOS traffic-light window controls, and ergonomic keybinding polish.
 
-Version 1.7 adds the **Windows & macOS-style Floating Desktop Experience**: freeform floating window management, native `hyprbars` titlebars with Close (`×`), Maximize (`□`), and Minimize (`−`) buttons, titlebar double-click maximization, an interactive bottom desktop dock (`omarchy.dock`) acting as the minimization shelf and pinned app launcher, drop shadows for depth, solid opacity overrides, and seamless layout cycling (`SUPER + L` / `SUPER + ALT + L`). See [Floating Mode Guide](docs/FLOATING-MODE.md).
+Version 1.8 adds the **Pixel Minimized Bubble & macOS Window Controls**: a Google Pixel / Material 3 floating minimized app bubble with horizontal hover expansion and multi-workspace isolation, macOS traffic-light window buttons (🔴 Close, 🟡 Minimize, 🟢 Maximize), native border and diagonal corner mouse resizing, keyboard resize shortcuts, smart snapping with toggle-unsnap memory, and clean layout isolation. See [Floating Mode Guide](docs/FLOATING-MODE.md).
+
+Version 1.7 adds the **Windows & macOS-style Floating Desktop Experience**: freeform floating window management, native `hyprbars` titlebars with Close (`×`), Maximize (`□`), and Minimize (`−`) buttons, titlebar double-click maximization, an interactive bottom desktop dock (`omarchy.dock`) acting as the minimization shelf and pinned app launcher, drop shadows for depth, solid opacity overrides, and seamless layout cycling (`SUPER + L` / `SUPER + ALT + L`).
 
 Version 1.6 adds native background-only glass for Spotify, Files, ChatGPT, the AntiGravity app and Foot, with solid foreground content and gentle compositor blur. Spotify fullscreen color backdrops and decorative gradients are removed. See [background glass setup](reference/background-glass/README.md) and [Spotify live sync](reference/spotify-sync/README.md). The optional [universal monitor](reference/background-glass/universal/README.md) covers current/future installed desktop apps and notifies when a native theme recipe is missing. Pet changes are excluded.
 
@@ -18,14 +20,16 @@ This project was developed through an AI-assisted workflow. The concept, customi
 
 I did not write Omarchy, Quickshell, or Hyprland from scratch. What I contributed:
 
-- **Floating Mode & Windows/macOS Desktop UX** (`snippets/floating-mode.lua` & `docs/FLOATING-MODE.md`): Integrated the floating desktop workflow with `hyprbars` native titlebars (Close, Maximize/Restore, Minimize to Dock), double-click to maximize, interactive bottom dock integration (`omarchy.dock` / `omarchy-dock`), drop-shadow depth, and solid opacity overrides.
-- **Ergonomic Keybindings Snippet** (`snippets/bindings-ergonomic.lua`): Fully audited all live Hyprland keybindings against Omarchy distribution defaults. Restored and wired workspace layout cycling (`SUPER + L` / `SUPER + ALT + L` for Tiling -> Scrolling -> Floating), window floating toggle (`SUPER + T`), core Omarchy window management (`SUPER + P`, `SUPER + S`, `SUPER + SHIFT + SPACE`), and productivity shortcuts.
+- **Pixel Minimized Bubble Plugin** (`plugins/community.floating-bubble/` & `docs/FLOATING-MODE.md`): Designed and built the Material 3 / Pixel floating bubble in Quickshell QML. Features icons-only display, smooth horizontal hover expansion, strict collision avoidance against maximized windows, and complete multi-workspace isolation so each workspace remembers only its own minimized apps.
+- **macOS Traffic Light Titlebars** (`snippets/floating-mode.lua`): Integrated circular traffic-light window controls (🔴 Close, 🟡 Minimize, 🟢 Maximize) with hover icons and titlebar double-click maximization.
+- **Native Window Resizing Polish**: Configured `resize_on_border = true` and `extend_border_grab_area = 18` for effortless mouse edge and corner dragging, plus directional keyboard resize bindings (<kbd>SUPER</kbd> + <kbd>CTRL</kbd> + Arrows/`+`/`-`).
+- **Smart Snapping & Unsnapping Engine** (`bin/omarchy-hyprland-window-snap`): Built snapping with toggle geometry memory, returning windows to their exact pre-snap floating position when re-triggered.
+- **Minimization & Restore Tools** (`bin/omarchy-hyprland-window-minimize` & `bin/omarchy-hyprland-window-restore`): Implemented reliable workspace tagging and restore dispatching across special workspaces.
+- **Ergonomic Keybindings Snippet** (`snippets/bindings-ergonomic.lua`): Audited and wired workspace layout cycling (`SUPER + L` / `SUPER + ALT + L` for Tiling -> Scrolling -> Floating), snapping, resizing, and window restore.
 - **Frosted Glass Snippet** (`snippets/looknfeel-glass.lua`): Tuned Hyprland `decoration` parameters — blur radius, passes, layerrule blur targets, window opacity, and shadow settings — to produce a frosted glass aesthetic on Wayland.
 - **Floating Bar Layout Snippet** (`snippets/shell-bar-layout.json`): Designed a `shell.json` layout configuration placing a center island telemetry widget (`daemon0.system-pulse`) with balanced left and right widget clusters for the Omarchy Quickshell bar.
 - **Interactive Dock Layout Snippet** (`snippets/shell-dock-layout.json`): Configured the Quickshell desktop dock for pinned apps and minimization shelf.
-- **Installer**: Authored `./install.sh check` for dependency validation.
-- **Documentation**: Wrote all snippet descriptions, usage instructions, and manual application guides.
-- **Testing**: Tested all snippets on Omarchy 4.0.2 / Hyprland 0.56.2 on a supported Linux desktop.
+- **Testing & Verification**: Automated unit tests and test suites covering all snippets, plugins, and helper scripts.
 
 ---
 
@@ -47,18 +51,29 @@ I did not write Omarchy, Quickshell, or Hyprland from scratch. What I contribute
 
 ```
 omarchy-shell-polish/
+├── bin/
+│   ├── omarchy-hyprland-window-minimize    # Tag and minimize floating windows
+│   ├── omarchy-hyprland-window-restore     # Restore latest, all, or specific windows
+│   └── omarchy-hyprland-window-snap        # Snap left/right/center with unsnap memory
+├── plugins/
+│   └── community.floating-bubble/          # Pixel / Material 3 floating minimized bubble
+│       ├── manifest.json
+│       ├── Service.qml
+│       └── FloatingBubbleWindow.qml
 ├── snippets/
-│   ├── floating-mode.lua         # Windows & macOS-style floating mode + hyprbars titlebars
-│   ├── shell-dock-layout.json    # Interactive dock configuration & pinned apps
-│   ├── looknfeel-glass.lua       # Frosted glass blur + opacity parameters
-│   ├── shell-bar-layout.json     # Center island floating bar layout
-│   └── bindings-ergonomic.lua    # Ergonomic keybinding set (Super+L, Super+T, etc.)
-├── assets/showcase/
+│   ├── floating-mode.lua                   # macOS traffic lights, edge resizing, shadows
+│   ├── shell-dock-layout.json              # Interactive dock configuration & pinned apps
+│   ├── looknfeel-glass.lua                 # Frosted glass blur + opacity parameters
+│   ├── shell-bar-layout.json               # Center island floating bar layout
+│   └── bindings-ergonomic.lua              # Ergonomic keybindings (Super+L, resize, snap)
 ├── docs/
-│   ├── FLOATING-MODE.md          # Comprehensive Floating Desktop UX guide
-│   ├── BAR-POLISH.md             # Top bar and bottom dock layout guide
-│   └── KEYBINDING-AUDIT.md       # Conflict-free keybinding audit table
+│   ├── FLOATING-MODE.md                    # Comprehensive Floating Desktop UX guide
+│   ├── RELEASE-NOTES.md                    # Version release highlights
+│   ├── BAR-POLISH.md                       # Top bar and bottom dock layout guide
+│   └── KEYBINDING-AUDIT.md                 # Conflict-free keybinding audit table
+├── tests/                                  # Automated regression test suites
 ├── install.sh
+├── VERSION
 └── CHANGELOG.md
 ```
 
@@ -70,8 +85,9 @@ omarchy-shell-polish/
 
 Transforms any workspace into a freeform floating desktop experience:
 
-- Native `hyprbars` window titlebars with Close (`×`), Maximize (`□`), and Minimize (`−`) controls.
+- Native `hyprbars` window titlebars with macOS traffic light controls: Close (`🔴 ×`), Minimize (`🟡 −`), and Maximize (`🟢 ＋`).
 - Double-clicking titlebars toggles maximized state.
+- Native border and corner grab areas for smooth mouse resizing (`resize_on_border = true`).
 - Drop shadows (`range: 16`, `render_power: 3`) for natural visual depth across overlapping windows.
 - Solid opacity override (`1.0`) ensuring background documents never bleed through.
 - Detailed guide: [docs/FLOATING-MODE.md](docs/FLOATING-MODE.md).
@@ -81,9 +97,10 @@ Transforms any workspace into a freeform floating desktop experience:
 A conflict-free, fully-audited Hyprland keybinding set:
 
 - **Workspace Layout Cycling**: `SUPER + L` (Cycle forward: Tiling → Scrolling → **Floating**), `SUPER + ALT + L` (Cycle backward).
+- **Window Snapping**: `SUPER + ALT + Left/Right/Down/Up` (Snap left/right, center/unsnap, maximize).
+- **Keyboard Resizing**: `SUPER + CTRL + Arrows` (width/height), `SUPER + CTRL + =/-` (diagonal whole size).
+- **Window Restore Engine**: `SUPER + CTRL + M` (restore latest), `SUPER + CTRL + SHIFT + M` (restore all on workspace).
 - **Window Management**: `SUPER + T` (float single window), `SUPER + P` (pseudo), `SUPER + S` (scratchpad), `SUPER + SHIFT + SPACE` (top bar toggle).
-- **Universal Shortcuts**: media playback (`SUPER + \`), app launcher (`SUPER + D`), LazyGit (`SUPER + CTRL + G`), Config Time Machine (`SUPER + ALT + H`), screenshot (`SUPER + SHIFT + S`), Study Focus (`SUPER + CTRL + ALT + S`).
-- Eliminates duplicate volume key dispatches and conflicting application hotkeys.
 
 ### 3. Frosted Glass (`snippets/looknfeel-glass.lua`)
 
@@ -117,51 +134,5 @@ Merge into `~/.config/omarchy/shell.json` under `"dock"` and run `omarchy-restar
 
 ## Requirements
 
-- **Omarchy** `dev (13f18b2c) / 4.0.2`
-- **Hyprland** `0.56.2`
-- **Quickshell** `0.3.1`
-
----
-
-## Installation & Usage
-
-1. Inspect snippets:
-   ```bash
-   ./install.sh check
-   ```
-2. Back up your existing files:
-   ```bash
-   cp ~/.config/hypr/looknfeel.lua ~/.config/hypr/looknfeel.lua.bak
-   cp ~/.config/omarchy/shell.json ~/.config/omarchy/shell.json.bak
-   cp ~/.config/hypr/bindings.lua ~/.config/hypr/bindings.lua.bak
-   ```
-3. Copy desired snippets into your configuration files:
-   ```bash
-   # Example — merge glass snippet
-   cat snippets/looknfeel-glass.lua >> ~/.config/hypr/looknfeel.lua
-   hyprctl reload
-   ```
-
----
-
-## Showcase
-
-**Latest supplied desktop showcase — 30 October 2026** · 2 min 39 sec · Full HD at 60 FPS · soundtrack included.
-
-[![Latest Omarchy Shell Polish showcase](assets/showcase/desktop-showcase-2026-10-30.gif)](https://aarushdalal.github.io/omarchy-shell-polish/#showcase)
-
-[Watch the full showcase](https://aarushdalal.github.io/omarchy-shell-polish/#showcase) · [Download WebM](https://aarushdalal.github.io/omarchy-shell-polish/assets/showcase/desktop-showcase-2026-10-30.webm) · [What the video shows](docs/SHOWCASE.md)
-
-The animated image combines four short highlights; the player contains the complete edited recording with its soundtrack. It replaces the previous README recording and the gallery's sample illustration.
-
-This is my configured desktop: floating shell controls, glass windows, terminal layouts, system panels, wallpaper changes and animation presets. The recording includes companion tools and artwork beyond this repository's portable snippets. See the [showcase guide](docs/SHOWCASE.md) for scope and chapter notes.
-
----
-
-## License
-
-[MIT License](LICENSE).
-
-## Refinement and privacy update
-
-Floating native controls · profile identity preserved. The latest video shows the recorded desktop; the session-component fixture uses sample data. See [release privacy](docs/RELEASE-PRIVACY.md). Existing Git history is preserved.
+- **Omarchy** `4.5.0` / Hyprland `0.56.2` / Quickshell `0.3.1`
+- Arch Linux rolling base
