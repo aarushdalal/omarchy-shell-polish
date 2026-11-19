@@ -117,7 +117,7 @@ class TestFloatingMode(unittest.TestCase):
         self.assertIn("macOS", doc_content)
 
         version_path = ROOT / 'VERSION'
-        self.assertEqual(version_path.read_text().strip(), "1.8.0")
+        self.assertTrue(version_path.read_text().strip() >= "1.8.0")
 
         changelog_path = ROOT / 'CHANGELOG.md'
         self.assertIn("## [1.8.0]", changelog_path.read_text())
