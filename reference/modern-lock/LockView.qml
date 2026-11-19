@@ -9,7 +9,7 @@ import qs.Commons as OmarchyPalette
 
 Item {
     id: root
-    readonly property string viewRevision: "minimal-stats-live-20261102"
+    readonly property string viewRevision: "minimal-stats-live-20261119"
     property string backgroundPath: ""
     property int backgroundVersion: 0
     property bool fingerprintConfigured: false
@@ -66,7 +66,7 @@ Item {
     onPasswordTextChanged: if (password.text !== passwordText) password.text = passwordText
     Timer { interval: 1000; repeat: true; running: root.presentationVisible; triggeredOnStart: true; onTriggered: root.now = new Date() }
 
-    Rectangle { anchors.fill: parent; color: OmarchyPalette.Color.background }
+    Rectangle { anchors.fill: parent; color: "transparent" }
     Image {
         id: wallpaper
         anchors.fill: parent
@@ -80,9 +80,9 @@ Item {
         anchors.fill: parent; source: wallpaper
         autoPaddingEnabled: false
         blurEnabled: wallpaper.status === Image.Ready
-        blur: 1; blurMax: 48; blurMultiplier: 1
+        blur: 1; blurMax: 12; blurMultiplier: 1
     }
-    Rectangle { anchors.fill: parent; color: Qt.alpha(OmarchyPalette.Color.background, Math.max(0, Math.min(1, root.backgroundScrimOpacity))) }
+    Rectangle { anchors.fill: parent; color: "transparent" }
     MouseArea {
         anchors.fill: parent
         hoverEnabled: root.inputEnabled

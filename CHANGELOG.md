@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1] - 2026-11-19
+
+- **Lock Screen Visual Refinement (`reference/modern-lock/LockView.qml`)**:
+  - **Transparent Backdrop**: Eliminated opaque black backdrop and scrim overlay under and around wallpaper surface, enabling transparent blur integration.
+  - **12px Blur Precision**: Reduced MultiEffect blur from 48px to 12px (`blurMax: 12`, `blurMultiplier: 1`, `contrast: 0.0`), keeping the active wallpaper clearly visible with a clean frosted glass effect.
+  - **View Revision**: Bumped `viewRevision` to `minimal-stats-live-20261119`.
+
 ## [1.8.0] - 2026-11-17
 
 - **Pixel Minimized Bubble Plugin (`community.floating-bubble`)**:
