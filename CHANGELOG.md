@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.1] - 2026-11-21
+
+- **Frosted Glass Wallpaper Visibility & Opacity Override Calibration (`snippets/looknfeel-glass.lua`, `reference/shared-glass/`)**:
+  - **Calibrated Frosted Glass Opacity**: Configured explicit compositor `override` opacity rules for terminals (`kitty`, `foot`, `Alacritty`, `ghostty`, `org.omarchy.agent`) and file managers (`org.gnome.Nautilus`, `thunar`, file dialogs) at `0.75 active / 0.65 inactive / 0.75 fullscreen`.
+  - **Removed Blanket Opaque Override**: Eliminated the catch-all `class = ".*"` `1.0 override` window rule that was neutralizing individual app transparency rules and default opacity tags.
+  - **High-Fidelity Blur Tuning**: Upgraded Hyprland compositor blur preset to `size = 7`, `passes = 3`, `vibrancy = 0.30`, and `ignore_opacity = true` for a rich, noise-free frosted glass aesthetic.
+  - **Ecosystem Transparency Parity**: Extended matching translucent glass rules to code editors & IDEs (`Antigravity`, `antigravity-ide`, `VSCode`, `obsidian`), chat & AI tools (`chatgpt`, `discord`, `WhatsApp`), Spotify, and floating utilities (`btop`, `LazyGit`, `System Monitor`, `AI Scratchpad`).
+  - **Legibility & Media Protection**: Preserved strict opacity (`1.0 override`) on web browsers, media players (`mpv`, `vlc`), photo viewers (`imv`), and games to avoid washing out web content or video rendering.
+
 ## [1.10.0] - 2026-11-21
 
 - **Encrypted Disk Boot Unlock UI & Automated Background Sync (`reference/boot-unlock/`)**:
