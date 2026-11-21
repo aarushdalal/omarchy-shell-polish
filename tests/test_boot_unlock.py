@@ -40,7 +40,7 @@ class TestBootUnlockModule(unittest.TestCase):
         hook_path = BOOT_UNLOCK_DIR / "25-sddm-wallpaper-sync.sh"
         content = hook_path.read_text(encoding="utf-8")
         self.assertIn("notify-send", content)
-        self.assertIn("Syncing Boot & Login Screens", content)
+        self.assertIn("Syncing Boot and Login Screens", content)
         self.assertIn("Sync Complete", content)
 
 if __name__ == "__main__":
