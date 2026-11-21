@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.0] - 2026-11-21
+
+- **Encrypted Disk Boot Unlock UI & Automated Background Sync (`reference/boot-unlock/`)**:
+  - **Frosted Monolith Early-Boot Screen**: Centers a frosted glass container (`card.png`) with 26px rounded corners, specular highlight rim, and ambient Gaussian blur (`0x18`) over the active desktop wallpaper for early-boot Linux LUKS encrypted storage unlock.
+  - **100% Automated Background Sync Engine**: Installs non-interactive sync script (`omarchy-plymouth-sync`) and Omarchy theme hook (`25-sddm-wallpaper-sync.sh`) that rebuilds the unified kernel image via `limine-mkinitcpio` silently in the background with zero terminal interruptions.
+  - **Real-Time Desktop Notification Alerts**: Emits transient desktop notifications (`notify-send`) when wallpaper sync starts and updates in-place to "Sync Complete" upon initramfs rebuild.
+  - **Zero Security or Encryption Changes**: Preserves existing LUKS keys, crypttab configurations, PAM stack, and desktop lock screen (`hyprlock`).
+  - **Automated Test Coverage**: Added `tests/test_boot_unlock.py` validating asset integrity, Plymouth script syntax, and clean-room compliance.
+
 ## [1.9.0] - 2026-11-19
 
 - **Virtualized 11-Delegate Arc Deck & Instant Gallery (`community.image-picker`)**:

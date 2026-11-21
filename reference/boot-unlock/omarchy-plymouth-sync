@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# omarchy-plymouth-sync: Automated Background Sync for Plymouth LUKS & SDDM
+# ==============================================================================
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLYMOUTH_DIR="/usr/share/plymouth/themes/omarchy"
+BG_CACHE="/var/cache/multienv/background.png"
+CARD_ASSET="$SCRIPT_DIR/card.png"
+SCRIPT_SRC="$SCRIPT_DIR/omarchy.script"
+
+# 1. Sync Active Wallpaper to Plymouth Theme
+if [[ -f "$BG_CACHE" && -d "$PLYMOUTH_DIR" ]]; then
+  chmod 644 "$BG_CACHE"
+  if command -v magick >/dev/null 2>&1; then
+    magick "$BG_CACHE" -resize 1920x1080^ -gravity center -extent 1920x1080 -blur 0x18 "$PLYMOUTH_DIR/background.png"
+    chmod 644 "$PLYMOUTH_DIR/background.png"
+  fi
+fi
+
+# 2. Install Frosted Monolith Card Asset into Plymouth
+if [[ -f "$CARD_ASSET" && -d "$PLYMOUTH_DIR" ]]; then
+  cp "$CARD_ASSET" "$PLYMOUTH_DIR/card.png"
+  chmod 644 "$PLYMOUTH_DIR/card.png"
+fi
+
+# 3. Install Updated Plymouth Script
+if [[ -f "$SCRIPT_SRC" && -d "$PLYMOUTH_DIR" ]]; then
+  cp "$SCRIPT_SRC" "$PLYMOUTH_DIR/omarchy.script"
+  chmod 644 "$PLYMOUTH_DIR/omarchy.script"
+fi
+
+# 4. Background Rebuild of Initramfs (Non-interactive Limine or fallback)
+if command -v limine-mkinitcpio >/dev/null 2>&1; then
+  nice -n 19 ionice -c 3 limine-mkinitcpio >/var/log/omarchy-plymouth-sync.log 2>&1 || true
+elif command -v mkinitcpio >/dev/null 2>&1; then
+  nice -n 19 ionice -c 3 /usr/bin/mkinitcpio -P >/var/log/omarchy-plymouth-sync.log 2>&1 || true
+fi

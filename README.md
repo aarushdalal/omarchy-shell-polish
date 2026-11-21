@@ -1,6 +1,12 @@
 # Omarchy Shell Polish (`omarchy-shell-polish`)
 
-> **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, Pixel floating bubble, macOS traffic-light window controls, and ergonomic keybinding polish.
+> **Unofficial / Community Refinement**: A curated collection of Hyprland and Omarchy shell configuration snippets for frosted glass aesthetics, floating bar layout, Pixel floating bubble, macOS traffic-light window controls, ergonomic keybinding polish, and theme-synchronized early-boot storage unlock.
+
+Version 1.10 adds the **Encrypted Disk Boot Unlock UI & Automated Background Sync** (`reference/boot-unlock/`):
+- **Frosted Monolith Early-Boot Screen**: Centers a frosted glass container (`card.png`) with 26px rounded corners, specular highlight rim, and ambient Gaussian blur (`0x18`) over the active desktop wallpaper for early-boot Linux LUKS encrypted storage unlock.
+- **100% Automated Background Sync Engine**: Installs non-interactive sync script (`omarchy-plymouth-sync`) and Omarchy theme hook (`25-sddm-wallpaper-sync.sh`) that rebuilds the unified kernel image via `limine-mkinitcpio` silently in the background with zero terminal interruptions.
+- **Real-Time Desktop Notification Alerts**: Emits transient desktop notifications (`notify-send`) when wallpaper sync starts and updates in-place to "Sync Complete" upon initramfs rebuild.
+- **Zero Security or Encryption Changes**: Preserves existing LUKS keys, crypttab configurations, PAM stack, and desktop lock screen (`hyprlock`).
 
 Version 1.9 adds the **Virtualized 11-Delegate Arc Deck & Space-in-Search Filtering** (`plugins/community.image-picker/`):
 - **Virtualized Ring Buffer Pool**: Re-architects `ImagePicker.qml` to instantiate an 11-delegate ring buffer pool (`Math.min(11, count)`), reducing GUI thread QML allocations by 99.6% across large libraries (from 50,000+ objects down to 11 live delegates) and eliminating opening freeze (<100ms instant presentation).
@@ -25,6 +31,7 @@ This project was developed through an AI-assisted workflow. The concept, customi
 I did not write Omarchy, Quickshell, or Hyprland from scratch. What I contributed:
 
 - **Pixel Minimized Bubble Plugin** (`plugins/community.floating-bubble/` & `docs/FLOATING-MODE.md`): Designed and built the Material 3 / Pixel floating bubble in Quickshell QML. Features icons-only display, smooth horizontal hover expansion, strict collision avoidance against maximized windows, and complete multi-workspace isolation so each workspace remembers only its own minimized apps.
+- **Encrypted Disk Boot Unlock & Sync** (`reference/boot-unlock/`): Built the Frosted Monolith early-boot kernel storage unlock UI for Plymouth LUKS and automated background wallpaper sync engine with `limine-mkinitcpio` and real-time desktop notification feedback.
 - **Virtualized Community Arc Deck Plugin** (`plugins/community.image-picker/`): Engineered the 11-delegate ring buffer pool algorithm and space-in-search multi-term filtering, dropping QML items by 99.6% across large catalogs and enabling instant deck presentation without compositor freeze.
 - **macOS Traffic Light Titlebars** (`snippets/floating-mode.lua`): Integrated circular traffic-light window controls (🔴 Close, 🟡 Minimize, 🟢 Maximize) with hover icons and titlebar double-click maximization.
 - **Native Window Resizing Polish**: Configured `resize_on_border = true` and `extend_border_grab_area = 18` for effortless mouse edge and corner dragging, plus directional keyboard resize bindings (<kbd>SUPER</kbd> + <kbd>CTRL</kbd> + Arrows/`+`/`-`).
@@ -134,6 +141,25 @@ A `shell.json` dock snippet for floating workspaces:
 - Supports bottom, top, left, or right positioning and auto-hide mode.
 
 Merge into `~/.config/omarchy/shell.json` under `"dock"` and run `omarchy-restart-shell`.
+
+### 6. Encrypted Disk Boot Unlock & Automated Sync (`reference/boot-unlock/`)
+
+![Encrypted Disk Unlock Screen](reference/boot-unlock/boot-unlock-preview.png)
+
+#### What It Does
+- **Theme-Synchronized Bootloader**: Mirrors your active Omarchy desktop wallpaper to the Plymouth early-boot kernel unlock screen (LUKS encrypted disk passphrase prompt) and SDDM login greeter.
+- **Frosted Monolith Aesthetic**: Renders a centered frosted glass card with 26px rounded corners, ambient Gaussian blur (`0x18`), and a minimalist masked password field.
+- **Zero-Prompt Automation**: Fully automated through an unprivileged cache (`/var/cache/multienv/background.png`) and background `limine-mkinitcpio` trigger—no terminal popups or root password requests when switching wallpapers.
+- **Real-Time Desktop Feedback**: Fires transient desktop notifications (`notify-send`) when the sync starts and updates in-place upon successful completion.
+
+#### What Changes After Installing It
+- **Plymouth Theme**: Sets active theme in `/etc/plymouth/plymouthd.conf` to `omarchy`.
+- **System Sync Script**: Installs `/usr/local/bin/omarchy-plymouth-sync` and sudoers rule `/etc/sudoers.d/99-omarchy-plymouth-sync`.
+- **Theme-Set Hook**: Adds `~/.config/omarchy/hooks/theme-set.d/25-sddm-wallpaper-sync.sh` to trigger on wallpaper changes.
+- **Initramfs Rebuilds**: The system initramfs is updated automatically in the background via `limine-mkinitcpio` whenever a wallpaper changes.
+- **Zero Breaking Changes**: Your LUKS encryption keys, crypttab parameters, kernel command line, and in-session lock screen (`hyprlock`) remain completely untouched.
+
+See [reference/boot-unlock/README.md](reference/boot-unlock/README.md) for step-by-step setup instructions.
 
 ---
 
