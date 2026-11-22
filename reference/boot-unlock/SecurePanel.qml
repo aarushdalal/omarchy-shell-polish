@@ -1,33 +1,34 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import "ThemeColors.js" as ThemeColors
 
 Item {
     id: root
 
-    // Palette Tokens matching Modern Lock Screen & Dark Glass Theme
-    readonly property color canvasColor: "#08090d"
-    readonly property color mainColor: "#f1f5f9"
-    readonly property color secondaryColor: "#94a3b8"
-    readonly property color mutedColor: "#64748b"
+    // Palette Tokens dynamically synchronized from the active wallpaper colors.toml
+    readonly property color canvasColor: ThemeColors.palette.background || "#08090d"
+    readonly property color mainColor: ThemeColors.palette.foreground || "#f1f5f9"
+    readonly property color secondaryColor: ThemeColors.palette.secondary || "#94a3b8"
+    readonly property color mutedColor: ThemeColors.palette.muted || "#64748b"
 
-    readonly property color accent: "#38bdf8"
-    readonly property color accentHover: "#60a5fa"
-    readonly property color pressedAccent: "#0284c7"
-    readonly property color actionInk: "#060b13"
+    readonly property color accent: ThemeColors.palette.accent || "#38bdf8"
+    readonly property color accentHover: ThemeColors.palette.accentHover || "#60a5fa"
+    readonly property color pressedAccent: ThemeColors.palette.blue || "#0284c7"
+    readonly property color actionInk: ThemeColors.palette.background || "#060b13"
 
-    readonly property color fieldBg: Qt.rgba(0, 0, 0, 0.28)
-    readonly property color fieldBorder: Qt.rgba(1, 1, 1, 0.10)
-    readonly property color fieldBorderActive: Qt.rgba(56/255, 189/255, 248/255, 0.65)
+    readonly property color fieldBg: Qt.rgba(0, 0, 0, 0.35)
+    readonly property color fieldBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
+    readonly property color fieldBorderActive: Qt.rgba(accent.r, accent.g, accent.b, 0.75)
 
-    readonly property color sessionActiveBg: Qt.rgba(56/255, 189/255, 248/255, 0.18)
-    readonly property color sessionInactiveBg: Qt.rgba(0, 0, 0, 0.25)
+    readonly property color sessionActiveBg: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
+    readonly property color sessionInactiveBg: Qt.rgba(0, 0, 0, 0.30)
 
-    readonly property color buttonBg: Qt.rgba(0, 0, 0, 0.30)
-    readonly property color buttonHoverBg: Qt.rgba(1, 1, 1, 0.10)
-    readonly property color buttonBorder: Qt.rgba(1, 1, 1, 0.10)
+    readonly property color buttonBg: Qt.rgba(0, 0, 0, 0.35)
+    readonly property color buttonHoverBg: Qt.rgba(accent.r, accent.g, accent.b, 0.16)
+    readonly property color buttonBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
 
-    readonly property color errorColor: "#f87171"
+    readonly property color errorColor: ThemeColors.palette.red || "#f87171"
     readonly property color errorBg: Qt.rgba(0.25, 0.06, 0.08, 0.88)
     readonly property color errorBorder: Qt.rgba(0.97, 0.44, 0.44, 0.45)
 
@@ -42,7 +43,8 @@ Item {
     property string brand: "MULTIENV"
     property string heading: "Welcome back"
     property string actionText: "Sign in"
-    property string backgroundPath: "/var/cache/multienv/background.png"
+    property string backgroundPath: "/var/cache/multienv/background_blurred.png"
+    property string fallbackBackgroundPath: "/var/cache/multienv/background.png"
     property var sessionNames: []
     property int sessionIndex: -1
     property bool reducedMotion: false
@@ -107,15 +109,20 @@ Item {
         }
     }
 
-    // --- Active Wallpaper Image with Soft Blur ---
+    // --- Active Wallpaper Image with Rich Smooth Atmospheric Blur ---
     Image {
         id: bgImage
         anchors.fill: parent
-        source: root.backgroundPath
+        source: (root.backgroundPath.indexOf(":") > 0 ? "" : "file://") + root.backgroundPath
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: Math.min(1920, Math.max(1, root.width))
         asynchronous: false
         cache: false
+        onStatusChanged: {
+            if (status === Image.Error && source.toString().indexOf("_blurred") !== -1) {
+                source = (root.fallbackBackgroundPath.indexOf(":") > 0 ? "" : "file://") + root.fallbackBackgroundPath;
+            }
+        }
     }
 
     MultiEffect {
@@ -123,22 +130,22 @@ Item {
         source: bgImage
         autoPaddingEnabled: false
         blurEnabled: bgImage.status === Image.Ready
-        blur: 1.0
-        blurMax: 64
-        blurMultiplier: 2.5
+        blur: bgImage.source.toString().indexOf("_blurred") !== -1 ? 0.22 : 0.65
+        blurMax: 48
+        blurMultiplier: 1.0
         opacity: bgImage.status === Image.Ready ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 300 } }
     }
 
-    // Atmospheric Vignette & Scrim Overlay for optimal legibility
+    // Atmospheric Vignette & Scrim Overlay for optimal legibility (preserves artwork luminescence)
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.45) }
-            GradientStop { position: 0.3; color: Qt.rgba(0, 0, 0, 0.20) }
-            GradientStop { position: 0.7; color: Qt.rgba(0, 0, 0, 0.25) }
-            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.55) }
+            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.22) }
+            GradientStop { position: 0.4; color: Qt.rgba(0, 0, 0, 0.08) }
+            GradientStop { position: 0.7; color: Qt.rgba(0, 0, 0, 0.12) }
+            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.30) }
         }
     }
 
@@ -172,7 +179,7 @@ Item {
 
         Rectangle {
             width: 1; height: 10
-            color: Qt.rgba(1, 1, 1, 0.2)
+            color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.28)
             anchors.verticalCenter: parent.verticalCenter
         }
 
@@ -195,7 +202,7 @@ Item {
         width: hostLabel.implicitWidth + 24
         radius: 13
         color: Qt.rgba(0.05, 0.07, 0.11, 0.75)
-        border.color: Qt.rgba(1, 1, 1, 0.12)
+        border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.22)
 
         Row {
             anchors.centerIn: parent
@@ -213,19 +220,6 @@ Item {
                 font.letterSpacing: 1.2
                 font.weight: Font.Medium
             }
-        }
-    }
-
-    // Monolith Mask Item for the Secondary Focused Blur Layer
-    Item {
-        id: cardMaskItem
-        width: card.width; height: card.height
-        visible: false
-        layer.enabled: true
-        Rectangle {
-            anchors.fill: parent
-            radius: 28
-            color: "#ffffff"
         }
     }
 
@@ -265,72 +259,34 @@ Item {
             anchors.margins: -4
             radius: 32
             color: "#000000"
-            opacity: 0.45
+            opacity: 0.50
             scale: 0.98
         }
 
-        // Frosted Glass Core with Layer 2 Deep Refraction Blur
-        Item {
-            id: frostedGlassCore
+        // Clean Translucent Frosted Glass Card (Dynamic Theme Palette)
+        Rectangle {
+            id: cardBackground
             anchors.fill: parent
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: cardMaskItem
-            }
-
-            Image {
-                id: innerBg
-                x: -card.x
-                y: -card.y
-                width: root.width
-                height: root.height
-                source: bgImage.source
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: false
-                visible: bgImage.status === Image.Ready
-            }
-
-            MultiEffect {
-                anchors.fill: innerBg
-                source: innerBg
-                blurEnabled: bgImage.status === Image.Ready
-                blur: 1.0
-                blurMax: 64
-                blurMultiplier: 2.4
-                brightness: 0.12
-                contrast: 0.18
-                saturation: 0.20
-            }
-
-            // Glass Surface Gradient Tint
-            Rectangle {
-                anchors.fill: parent
-                radius: 28
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.08) }
-                    GradientStop { position: 0.3; color: Qt.rgba(0, 0, 0, 0.18) }
-                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.45) }
+            radius: 28
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { 
+                    position: 0.0; 
+                    color: Qt.rgba(Qt.color(ThemeColors.palette.lighterBg || "#141824").r, 
+                                   Qt.color(ThemeColors.palette.lighterBg || "#141824").g, 
+                                   Qt.color(ThemeColors.palette.lighterBg || "#141824").b, 
+                                   0.80) 
+                }
+                GradientStop { 
+                    position: 1.0; 
+                    color: Qt.rgba(Qt.color(ThemeColors.palette.background || "#08090d").r, 
+                                   Qt.color(ThemeColors.palette.background || "#08090d").g, 
+                                   Qt.color(ThemeColors.palette.background || "#08090d").b, 
+                                   0.88) 
                 }
             }
-
-            // Beveled Specular Border
-            Rectangle {
-                anchors.fill: parent
-                radius: 28
-                color: "transparent"
-                border.color: Qt.rgba(1, 1, 1, 0.14)
-                border.width: 1.5
-
-                // Top rim high-luminance specular line
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: parent.width - 48
-                    height: 1
-                    color: Qt.rgba(1, 1, 1, 0.22)
-                }
-            }
+            border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.24)
+            border.width: 1
         }
 
         Column {
@@ -379,7 +335,7 @@ Item {
                     width: 52; height: 52; radius: 26
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: Qt.rgba(0, 0, 0, 0.35)
-                    border.color: Qt.rgba(1, 1, 1, 0.12)
+                    border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.22)
                     border.width: 1
 
                     // Breathing focus halo
@@ -611,8 +567,8 @@ Item {
 
                         background: Rectangle {
                             radius: 10
-                            color: unlock.down ? Qt.rgba(56/255, 189/255, 248/255, 0.25) : (password.length > 0 || unlock.activeFocus || unlock.hovered ? Qt.rgba(56/255, 189/255, 248/255, 0.20) : Qt.rgba(0, 0, 0, 0.25))
-                            border.color: unlock.activeFocus ? root.accent : (password.length > 0 ? Qt.rgba(56/255, 189/255, 248/255, 0.40) : Qt.rgba(1, 1, 1, 0.08))
+                            color: unlock.down ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.30) : (password.length > 0 || unlock.activeFocus || unlock.hovered ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.20) : Qt.rgba(0, 0, 0, 0.25))
+                            border.color: unlock.activeFocus ? root.accent : (password.length > 0 ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.45) : Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.18))
                             border.width: 1
                             Behavior on color { ColorAnimation { duration: 120 } }
                             Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -787,7 +743,7 @@ Item {
         background: Rectangle {
             color: "#121622"
             radius: 14
-            border.color: Qt.rgba(1, 1, 1, 0.15)
+            border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.24)
             border.width: 1
         }
 
