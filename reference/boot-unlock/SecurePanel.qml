@@ -114,7 +114,7 @@ Item {
         source: root.backgroundPath
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: Math.min(1920, Math.max(1, root.width))
-        asynchronous: true
+        asynchronous: false
         cache: false
     }
 
@@ -287,7 +287,7 @@ Item {
                 height: root.height
                 source: bgImage.source
                 fillMode: Image.PreserveAspectCrop
-                asynchronous: true
+                asynchronous: false
                 visible: bgImage.status === Image.Ready
             }
 

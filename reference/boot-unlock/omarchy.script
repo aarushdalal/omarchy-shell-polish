@@ -83,7 +83,7 @@ fun show_password_dialog() {
   device.sprite.SetOpacity(1);
   footer.sprite.SetOpacity(1);
   lock.sprite.SetOpacity(1);
-  entry.sprite.SetOpacity(1);
+  entry.sprite.SetOpacity(0);
 }
 
 fun hide_password_dialog() {
