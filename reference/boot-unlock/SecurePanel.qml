@@ -7,26 +7,30 @@ Item {
     id: root
 
     // Palette Tokens dynamically synchronized from the active wallpaper colors.toml
+    readonly property bool isLightTheme: (ThemeColors.palette.mode || "dark") === "light"
     readonly property color canvasColor: ThemeColors.palette.background || "#08090d"
+    readonly property color surfaceColor: ThemeColors.palette.lighterBg || "#14171c"
     readonly property color mainColor: ThemeColors.palette.foreground || "#f1f5f9"
-    readonly property color secondaryColor: ThemeColors.palette.secondary || "#94a3b8"
-    readonly property color mutedColor: ThemeColors.palette.muted || "#64748b"
+    readonly property color rawSecondary: ThemeColors.palette.secondary || "#94a3b8"
+    readonly property color rawMuted: ThemeColors.palette.muted || "#64748b"
+    readonly property color secondaryColor: Math.abs((0.2126 * rawSecondary.r + 0.7152 * rawSecondary.g + 0.0722 * rawSecondary.b) - (0.2126 * surfaceColor.r + 0.7152 * surfaceColor.g + 0.0722 * surfaceColor.b)) >= 0.30 ? rawSecondary : Qt.tint(rawSecondary, Qt.rgba(mainColor.r, mainColor.g, mainColor.b, 0.55))
+    readonly property color mutedColor: Math.abs((0.2126 * rawMuted.r + 0.7152 * rawMuted.g + 0.0722 * rawMuted.b) - (0.2126 * surfaceColor.r + 0.7152 * surfaceColor.g + 0.0722 * surfaceColor.b)) >= 0.22 ? rawMuted : Qt.rgba((secondaryColor.r + rawMuted.r) * 0.5, (secondaryColor.g + rawMuted.g) * 0.5, (secondaryColor.b + rawMuted.b) * 0.5, 1.0)
 
     readonly property color accent: ThemeColors.palette.accent || "#38bdf8"
     readonly property color accentHover: ThemeColors.palette.accentHover || "#60a5fa"
     readonly property color pressedAccent: ThemeColors.palette.blue || "#0284c7"
     readonly property color actionInk: ThemeColors.palette.background || "#060b13"
 
-    readonly property color fieldBg: Qt.rgba(0, 0, 0, 0.35)
-    readonly property color fieldBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
-    readonly property color fieldBorderActive: Qt.rgba(accent.r, accent.g, accent.b, 0.75)
+    readonly property color fieldBg: isLightTheme ? Qt.rgba(1, 1, 1, 0.56) : Qt.rgba(0, 0, 0, 0.35)
+    readonly property color fieldBorder: Qt.rgba(accent.r, accent.g, accent.b, isLightTheme ? 0.34 : 0.22)
+    readonly property color fieldBorderActive: Qt.rgba(accent.r, accent.g, accent.b, 0.78)
 
-    readonly property color sessionActiveBg: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
-    readonly property color sessionInactiveBg: Qt.rgba(0, 0, 0, 0.30)
+    readonly property color sessionActiveBg: Qt.rgba(accent.r, accent.g, accent.b, isLightTheme ? 0.24 : 0.22)
+    readonly property color sessionInactiveBg: isLightTheme ? Qt.rgba(0, 0, 0, 0.08) : Qt.rgba(0, 0, 0, 0.30)
 
-    readonly property color buttonBg: Qt.rgba(0, 0, 0, 0.35)
+    readonly property color buttonBg: isLightTheme ? Qt.rgba(1, 1, 1, 0.50) : Qt.rgba(0, 0, 0, 0.35)
     readonly property color buttonHoverBg: Qt.rgba(accent.r, accent.g, accent.b, 0.16)
-    readonly property color buttonBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
+    readonly property color buttonBorder: Qt.rgba(accent.r, accent.g, accent.b, isLightTheme ? 0.34 : 0.22)
 
     readonly property color errorColor: ThemeColors.palette.red || "#f87171"
     readonly property color errorBg: Qt.rgba(0.25, 0.06, 0.08, 0.88)
@@ -41,6 +45,9 @@ Item {
     property bool failed: false
     property string message: ""
     property string brand: "MULTIENV"
+    property string brandTagline: "WORKSTATION MONOLITH"
+    property string brandLogo: ""
+    property bool brandLogoColorize: false
     property string heading: "Welcome back"
     property string actionText: "Sign in"
     property string backgroundPath: "/var/cache/multienv/background_blurred.png"
@@ -93,7 +100,7 @@ Item {
         }
     }
 
-    // --- Fallback Pure Dark Background ---
+    // --- Fallback Theme Background ---
     Rectangle {
         anchors.fill: parent
         color: root.canvasColor
@@ -103,9 +110,9 @@ Item {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "#0d1018" }
-            GradientStop { position: 0.5; color: "#08090d" }
-            GradientStop { position: 1.0; color: "#040507" }
+            GradientStop { position: 0.0; color: root.surfaceColor }
+            GradientStop { position: 0.55; color: root.canvasColor }
+            GradientStop { position: 1.0; color: Qt.darker(root.canvasColor, 1.35) }
         }
     }
 
@@ -142,53 +149,87 @@ Item {
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.22) }
-            GradientStop { position: 0.4; color: Qt.rgba(0, 0, 0, 0.08) }
-            GradientStop { position: 0.7; color: Qt.rgba(0, 0, 0, 0.12) }
-            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.30) }
+            GradientStop { position: 0.0; color: root.isLightTheme ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(0, 0, 0, 0.24) }
+            GradientStop { position: 0.4; color: root.isLightTheme ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(0, 0, 0, 0.08) }
+            GradientStop { position: 0.7; color: root.isLightTheme ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(0, 0, 0, 0.12) }
+            GradientStop { position: 1.0; color: root.isLightTheme ? Qt.rgba(1, 1, 1, 0.22) : Qt.rgba(0, 0, 0, 0.30) }
         }
     }
 
-    // Top Navigation / Header (Minimal Brand)
+    // Top Navigation / Header (Separate Floating Element Above Blurred Background)
     Row {
         x: Math.max(32, root.width * 0.05)
-        y: 28
-        spacing: 10
+        y: 24
+        spacing: 11
 
+        // Optional Opt-In Brand Logo SVG
+        Item {
+            visible: root.brandLogo.length > 0
+            width: 26
+            height: 26
+            anchors.verticalCenter: parent.verticalCenter
+
+            Image {
+                id: brandLogoImg
+                objectName: "brandLogoImage"
+                anchors.fill: parent
+                visible: !root.brandLogoColorize
+                source: root.brandLogo.length === 0 ? "" : ((root.brandLogo.indexOf(":") > 0 ? "" : (root.brandLogo.charAt(0) === "/" ? "file://" : "")) + root.brandLogo)
+                fillMode: Image.PreserveAspectFit
+                sourceSize: Qt.size(26, 26)
+                cache: false
+                asynchronous: false
+            }
+
+            MultiEffect {
+                anchors.fill: brandLogoImg
+                source: brandLogoImg
+                visible: root.brandLogoColorize
+                colorization: 1.0
+                colorizationColor: root.accent
+            }
+        }
+
+        // Default Minimal Dot Indicator (when no custom BrandLogo is configured)
         Rectangle {
+            visible: root.brandLogo.length === 0
             width: 7; height: 7; radius: 3.5
             color: root.accent
             anchors.verticalCenter: parent.verticalCenter
 
-            // Subtle glow
             Rectangle {
                 anchors.centerIn: parent
                 width: 13; height: 13; radius: 6.5
-                color: Qt.rgba(56/255, 189/255, 248/255, 0.25)
+                color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.25)
             }
         }
 
         Text {
+            objectName: "brandText"
             text: root.brand
             color: root.mainColor
             font.family: "Noto Sans"
-            font.pixelSize: 11
-            font.letterSpacing: 2.5
+            font.pixelSize: 12
+            font.letterSpacing: 2.4
             font.weight: Font.Bold
+            anchors.verticalCenter: parent.verticalCenter
+            style: root.isLightTheme ? Text.Normal : Text.Outline
+            styleColor: Qt.rgba(0, 0, 0, 0.45)
         }
 
         Rectangle {
-            width: 1; height: 10
-            color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.28)
+            width: 1; height: 11
+            color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.35)
             anchors.verticalCenter: parent.verticalCenter
         }
 
         Text {
-            text: "WORKSTATION MONOLITH"
-            color: root.mutedColor
+            text: root.brandTagline
+            color: root.secondaryColor
             font.family: "Noto Sans"
             font.pixelSize: 10
             font.letterSpacing: 2
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 
@@ -201,15 +242,16 @@ Item {
         height: 26
         width: hostLabel.implicitWidth + 24
         radius: 13
-        color: Qt.rgba(0.05, 0.07, 0.11, 0.75)
-        border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.22)
+        color: root.isLightTheme ? Qt.rgba(1, 1, 1, 0.65) : Qt.rgba(root.canvasColor.r, root.canvasColor.g, root.canvasColor.b, 0.72)
+        border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.24)
 
         Row {
             anchors.centerIn: parent
             spacing: 7
             Rectangle {
                 width: 6; height: 6; radius: 3
-                color: "#10b981"
+                color: ThemeColors.palette.green || "#10b981"
+                anchors.verticalCenter: parent.verticalCenter
             }
             Text {
                 id: hostLabel
@@ -344,18 +386,25 @@ Item {
                         anchors.margins: -3
                         radius: 29
                         color: "transparent"
-                        border.color: Qt.rgba(56/255, 189/255, 248/255, 0.45)
+                        border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.45)
                         border.width: 1.5
                         opacity: password.activeFocus ? 1.0 : 0.0
                         Behavior on opacity { NumberAnimation { duration: 200 } }
                     }
 
                     Image {
+                        id: userIconImg
                         anchors.centerIn: parent
                         width: 24; height: 24
                         source: "icons/user.svg"
                         fillMode: Image.PreserveAspectFit
                         sourceSize: Qt.size(24, 24)
+                    }
+                    MultiEffect {
+                        anchors.fill: userIconImg
+                        source: userIconImg
+                        colorization: 1.0
+                        colorizationColor: root.mainColor
                     }
                 }
 
@@ -500,14 +549,25 @@ Item {
                     anchors.rightMargin: 6
                     spacing: 8
 
-                    Image {
+                    Item {
                         width: 16; height: 16
-                        source: "icons/lock.svg"
-                        fillMode: Image.PreserveAspectFit
-                        sourceSize: Qt.size(16, 16)
                         anchors.verticalCenter: parent.verticalCenter
-                        opacity: password.activeFocus ? 1.0 : 0.6
+                        opacity: password.activeFocus ? 1.0 : 0.72
                         Behavior on opacity { NumberAnimation { duration: 140 } }
+
+                        Image {
+                            id: lockIconImg
+                            anchors.fill: parent
+                            source: "icons/lock.svg"
+                            fillMode: Image.PreserveAspectFit
+                            sourceSize: Qt.size(16, 16)
+                        }
+                        MultiEffect {
+                            anchors.fill: lockIconImg
+                            source: lockIconImg
+                            colorization: 1.0
+                            colorizationColor: password.activeFocus ? root.accent : root.secondaryColor
+                        }
                     }
 
                     TextField {
@@ -574,14 +634,25 @@ Item {
                             Behavior on border.color { ColorAnimation { duration: 120 } }
                         }
 
-                        contentItem: Image {
+                        contentItem: Item {
                             anchors.centerIn: parent
                             width: 16; height: 16
-                            source: "icons/arrow-right.svg"
-                            fillMode: Image.PreserveAspectFit
-                            sourceSize: Qt.size(16, 16)
-                            opacity: (password.length > 0 || unlock.hovered || unlock.activeFocus) ? 0.95 : 0.45
+                            opacity: (password.length > 0 || unlock.hovered || unlock.activeFocus) ? 0.95 : 0.55
                             Behavior on opacity { NumberAnimation { duration: 120 } }
+
+                            Image {
+                                id: arrowIconImg
+                                anchors.fill: parent
+                                source: "icons/arrow-right.svg"
+                                fillMode: Image.PreserveAspectFit
+                                sourceSize: Qt.size(16, 16)
+                            }
+                            MultiEffect {
+                                anchors.fill: arrowIconImg
+                                source: arrowIconImg
+                                colorization: 1.0
+                                colorizationColor: root.mainColor
+                            }
                         }
                     }
                 }
@@ -608,13 +679,24 @@ Item {
                     spacing: 7
 
                     // Breathing Pure SVG Fingerprint Glyph
-                    Image {
+                    Item {
                         width: 15; height: 15
-                        source: "icons/fingerprint.svg"
-                        fillMode: Image.PreserveAspectFit
-                        sourceSize: Qt.size(15, 15)
                         anchors.verticalCenter: parent.verticalCenter
                         opacity: root.fingerprintBusy ? 1.0 : breathingPulse.opacityVal
+
+                        Image {
+                            id: fpIconImg
+                            anchors.fill: parent
+                            source: "icons/fingerprint.svg"
+                            fillMode: Image.PreserveAspectFit
+                            sourceSize: Qt.size(15, 15)
+                        }
+                        MultiEffect {
+                            anchors.fill: fpIconImg
+                            source: fpIconImg
+                            colorization: 1.0
+                            colorizationColor: root.accent
+                        }
 
                         QtObject {
                             id: breathingPulse
@@ -691,13 +773,24 @@ Item {
                 contentItem: Row {
                     anchors.centerIn: parent
                     spacing: 7
-                    Image {
+                    Item {
                         width: 13; height: 13
-                        source: powerBtn.text === "Restart" ? "icons/restart.svg" : "icons/power.svg"
-                        fillMode: Image.PreserveAspectFit
-                        sourceSize: Qt.size(13, 13)
                         anchors.verticalCenter: parent.verticalCenter
-                        opacity: powerBtn.hovered ? 1.0 : 0.7
+                        opacity: powerBtn.hovered ? 1.0 : 0.80
+
+                        Image {
+                            id: powerIconImg
+                            anchors.fill: parent
+                            source: powerBtn.text === "Restart" ? "icons/restart.svg" : "icons/power.svg"
+                            fillMode: Image.PreserveAspectFit
+                            sourceSize: Qt.size(13, 13)
+                        }
+                        MultiEffect {
+                            anchors.fill: powerIconImg
+                            source: powerIconImg
+                            colorization: 1.0
+                            colorizationColor: powerBtn.hovered ? root.mainColor : root.secondaryColor
+                        }
                     }
                     Text {
                         text: powerBtn.text
@@ -741,9 +834,9 @@ Item {
         palette.button: root.buttonBg
 
         background: Rectangle {
-            color: "#121622"
+            color: root.surfaceColor
             radius: 14
-            border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.24)
+            border.color: Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.28)
             border.width: 1
         }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # 25-sddm-wallpaper-sync.sh: Automated Zero-Prompt Sync for SDDM & Plymouth
-# Synchronizes wallpaper, pre-blurred bokeh cache, and colors.toml palette
+# Synchronizes wallpaper, pre-blurred bokeh cache, colors.toml palette, and SVG logo
 # ==============================================================================
 set -euo pipefail
 
@@ -10,7 +10,8 @@ DEST_FILE="$DEST_DIR/background.png"
 DEST_BLURRED="$DEST_DIR/background_blurred.png"
 DEST_COLORS_JS="$DEST_DIR/ThemeColors.js"
 DEST_COLORS_JSON="$DEST_DIR/colors.json"
-REPO_THEME_DIR="$HOME/Work/arch-multienv/sddm/themes/multienv-selector"
+DEST_LOGO_SVG="$DEST_DIR/brand-logo.svg"
+LOGO_TPL="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/boot-unlock/brand-logo.svg.tpl"
 SYNC_ICON="$HOME/.local/share/icons/omarchy-sync.svg"
 
 # Resolve the actual current background image path:
@@ -46,55 +47,51 @@ if [[ -n "$CURRENT_BG" && -f "$CURRENT_BG" && -d "$DEST_DIR" ]]; then
   fi
 fi
 
-# 2. Synchronize Color Palette from colors.toml to ThemeColors.js & colors.json
+# 2. Synchronize Color Palette & SVG Brand Logo from colors.toml
 if [[ -n "$COLORS_TOML" && -f "$COLORS_TOML" ]]; then
-  python3 -c "
-import tomllib, json, os
+  python3 - "$COLORS_TOML" "$DEST_COLORS_JS" "$DEST_COLORS_JSON" "$LOGO_TPL" "$DEST_LOGO_SVG" <<'PY' 2>/dev/null || true
+import json, os, sys, tomllib
 
-with open('$COLORS_TOML', 'rb') as f:
+toml_path, js_out, json_out, logo_tpl, logo_out = sys.argv[1:6]
+with open(toml_path, "rb") as f:
     c = tomllib.load(f)
 
 palette = {
-    'mode': c.get('mode', 'dark'),
-    'accent': c.get('accent', '#38bdf8'),
-    'accentHover': c.get('bright_blue', c.get('bright_cyan', '#60a5fa')),
-    'foreground': c.get('foreground', c.get('fg', '#f1f5f9')),
-    'secondary': c.get('dark_fg', '#94a3b8'),
-    'muted': c.get('muted', '#64748b'),
-    'background': c.get('background', c.get('bg', '#08090d')),
-    'lighterBg': c.get('lighter_bg', '#141824'),
-    'cyan': c.get('cyan', '#38bdf8'),
-    'blue': c.get('blue', '#60a5fa'),
-    'red': c.get('red', '#f87171'),
-    'green': c.get('green', '#4ade80'),
-    'yellow': c.get('yellow', '#facc15')
+    "mode": c.get("mode", "dark"),
+    "accent": c.get("accent", "#38bdf8"),
+    "accentHover": c.get("bright_blue", c.get("bright_cyan", "#60a5fa")),
+    "foreground": c.get("foreground", c.get("fg", "#f1f5f9")),
+    "secondary": c.get("dark_fg", "#94a3b8"),
+    "muted": c.get("muted", "#64748b"),
+    "background": c.get("background", c.get("bg", "#08090d")),
+    "lighterBg": c.get("lighter_bg", "#141824"),
+    "cyan": c.get("cyan", "#38bdf8"),
+    "blue": c.get("blue", "#60a5fa"),
+    "red": c.get("red", "#f87171"),
+    "green": c.get("green", "#4ade80"),
+    "yellow": c.get("yellow", "#facc15"),
 }
 
-js_content = f'''// Generated from active Omarchy theme colors.toml
-.pragma library
+js_content = f"// Generated from active Omarchy theme colors.toml\n.pragma library\n\nvar palette = {json.dumps(palette, indent=4)};\n"
+os.makedirs(os.path.dirname(js_out), exist_ok=True)
+with open(js_out, "w", encoding="utf-8") as f:
+    f.write(js_content)
+os.chmod(js_out, 0o644)
 
-var palette = {json.dumps(palette, indent=4)};
-'''
+with open(json_out, "w", encoding="utf-8") as f:
+    json.dump(palette, f, indent=2)
+os.chmod(json_out, 0o644)
 
-for p in ['$DEST_COLORS_JS', '$REPO_THEME_DIR/ThemeColors.js']:
-    try:
-        os.makedirs(os.path.dirname(p), exist_ok=True)
-        with open(p, 'w') as f:
-            f.write(js_content)
-        os.chmod(p, 0o644)
-    except Exception:
-        pass
-
-try:
-    with open('$DEST_COLORS_JSON', 'w') as f:
-        json.dump(palette, f, indent=2)
-    os.chmod('$DEST_COLORS_JSON', 0o644)
-except Exception:
-    pass
-" 2>/dev/null || true
+if os.path.isfile(logo_tpl):
+    with open(logo_tpl, "r", encoding="utf-8") as f:
+        svg = f.read().format(FG=palette["foreground"], ACCENT=palette["accent"])
+    with open(logo_out, "w", encoding="utf-8") as f:
+        f.write(svg)
+    os.chmod(logo_out, 0o644)
+PY
 fi
 
-# 3. Trigger Plymouth Background Rebuild with Pure Vector Desktop Notifications
+# 3. Trigger Plymouth Background & Frosted Asset Rebuild with Desktop Notifications
 if [[ -x "/usr/local/bin/omarchy-plymouth-sync" ]]; then
   (
     ICON_ARG=()

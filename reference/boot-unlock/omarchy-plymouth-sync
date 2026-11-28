@@ -6,9 +6,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLYMOUTH_DIR="/usr/share/plymouth/themes/omarchy"
+SDDM_DEST="/usr/share/sddm/themes/multienv-selector"
 BG_CACHE="/var/cache/multienv/background.png"
-CARD_ASSET="$SCRIPT_DIR/card.png"
-SCRIPT_SRC="$SCRIPT_DIR/omarchy.script"
+COLORS_JSON="/var/cache/multienv/colors.json"
+RENDERER="$PLYMOUTH_DIR/render_assets.py"
+LOGO_TPL="$PLYMOUTH_DIR/brand-logo.svg.tpl"
+SCRIPT_TPL="$PLYMOUTH_DIR/omarchy.script.tpl"
 
 # 1. Sync Active Wallpaper to Plymouth Theme
 if [[ -f "$BG_CACHE" && -d "$PLYMOUTH_DIR" ]]; then
@@ -19,16 +22,28 @@ if [[ -f "$BG_CACHE" && -d "$PLYMOUTH_DIR" ]]; then
   fi
 fi
 
-# 2. Install Frosted Monolith Card Asset into Plymouth
-if [[ -f "$CARD_ASSET" && -d "$PLYMOUTH_DIR" ]]; then
-  cp "$CARD_ASSET" "$PLYMOUTH_DIR/card.png"
-  chmod 644 "$PLYMOUTH_DIR/card.png"
+# 2. Sync SDDM Theme Palette if Present
+if [[ -f "/var/cache/multienv/ThemeColors.js" && -d "$SDDM_DEST" ]]; then
+  cp "/var/cache/multienv/ThemeColors.js" "$SDDM_DEST/ThemeColors.js"
+  chmod 644 "$SDDM_DEST/ThemeColors.js"
 fi
 
-# 3. Install Updated Plymouth Script
-if [[ -f "$SCRIPT_SRC" && -d "$PLYMOUTH_DIR" ]]; then
-  cp "$SCRIPT_SRC" "$PLYMOUTH_DIR/omarchy.script"
-  chmod 644 "$PLYMOUTH_DIR/omarchy.script"
+# 3. Render Theme-Adapted Frosted Monolith Assets & Logo from Master SVG + colors.json
+if [[ -f "$RENDERER" && -f "$LOGO_TPL" && -f "$SCRIPT_TPL" && -d "$PLYMOUTH_DIR" ]]; then
+  python3 "$RENDERER" \
+    --colors "$COLORS_JSON" \
+    --logo-tpl "$LOGO_TPL" \
+    --script-tpl "$SCRIPT_TPL" \
+    --out-dir "$PLYMOUTH_DIR" \
+    --bg-image "$PLYMOUTH_DIR/background.png"
+  if [[ -f "$PLYMOUTH_DIR/multienv-monolith.script" ]]; then
+    mv -f "$PLYMOUTH_DIR/multienv-monolith.script" "$PLYMOUTH_DIR/omarchy.script"
+  fi
+  chmod 644 "$PLYMOUTH_DIR"/*.png "$PLYMOUTH_DIR/omarchy.script" 2>/dev/null || true
+elif [[ -f "$SCRIPT_DIR/card.png" && -f "$SCRIPT_DIR/omarchy.script" && -d "$PLYMOUTH_DIR" ]]; then
+  cp "$SCRIPT_DIR/card.png" "$PLYMOUTH_DIR/card.png"
+  cp "$SCRIPT_DIR/omarchy.script" "$PLYMOUTH_DIR/omarchy.script"
+  chmod 644 "$PLYMOUTH_DIR/card.png" "$PLYMOUTH_DIR/omarchy.script"
 fi
 
 # 4. Background Rebuild of Initramfs (Non-interactive Limine or fallback)
